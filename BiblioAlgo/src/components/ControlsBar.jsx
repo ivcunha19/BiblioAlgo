@@ -1,9 +1,16 @@
 import React, { useState } from 'react';
 
 export default function ControlsBar({
+  structureType = 'fila',
+  activeElementCount = 0,
   onEnqueue,
   onDequeue,
   onPeek,
+  onPush,
+  onPop,
+  onPeekTop,
+  onInsertAt,
+  onRemoveAt,
   onCheckEmpty,
   onReset,
   currentStepIndex,
@@ -21,14 +28,37 @@ export default function ControlsBar({
   activeMethod,
 }) {
   const [inputValue, setInputValue] = useState('');
+  const [positionValue, setPositionValue] = useState('0');
 
-  const handleEnqueueSubmit = (e) => {
+  const getNextItemValue = () =>
+    inputValue.trim() || String.fromCharCode(65 + Math.floor(Math.random() * 26));
+
+  const handlePrimarySubmit = (e) => {
     e.preventDefault();
-    const val =
-      inputValue.trim() || String.fromCharCode(65 + Math.floor(Math.random() * 26));
-    onEnqueue(val);
+    const val = getNextItemValue();
+
+    if (structureType === 'pilha') {
+      onPush(val);
+    } else if (structureType === 'lista') {
+      const pos = positionValue === '' ? 0 : Number(positionValue);
+      onInsertAt(val, pos);
+    } else {
+      onEnqueue(val);
+    }
     setInputValue('');
   };
+
+  const handleListRemove = () => {
+    const pos = positionValue === '' ? 0 : Number(positionValue);
+    onRemoveAt(pos);
+  };
+
+  const resetLabel =
+    structureType === 'pilha'
+      ? '↺ Reiniciar Pilha'
+      : structureType === 'lista'
+      ? '↺ Reiniciar Lista'
+      : '↺ Reiniciar Fila';
 
   return (
     <section
@@ -53,12 +83,15 @@ export default function ControlsBar({
             1. Operações:
           </span>
 
-          <form onSubmit={handleEnqueueSubmit} className="flex items-center gap-2">
-            <label htmlFor="enqueue-item-input" className="sr-only">
-              Valor do item para enfileirar
+          <form
+            onSubmit={handlePrimarySubmit}
+            className="flex flex-wrap items-center gap-2"
+          >
+            <label htmlFor="structure-item-input" className="sr-only">
+              Valor do item
             </label>
             <input
-              id="enqueue-item-input"
+              id="structure-item-input"
               type="text"
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
@@ -71,6 +104,33 @@ export default function ControlsBar({
                 color: 'var(--text-primary)',
               }}
             />
+
+            {structureType === 'lista' && (
+              <div className="flex items-center gap-1.5">
+                <label
+                  htmlFor="structure-pos-input"
+                  className="text-xs font-mono-code"
+                  style={{ color: 'var(--text-secondary)' }}
+                >
+                  pos:
+                </label>
+                <input
+                  id="structure-pos-input"
+                  type="number"
+                  value={positionValue}
+                  onChange={(e) => setPositionValue(e.target.value)}
+                  placeholder="0"
+                  className="w-16 px-2.5 py-1.5 text-sm rounded-lg font-mono-code text-center focus:outline-none focus:ring-2"
+                  style={{
+                    backgroundColor: 'var(--bg-page)',
+                    border: '1px solid var(--border-strong)',
+                    color: 'var(--text-primary)',
+                  }}
+                  title={`Posição na lista (inserção válida: 0 até ${activeElementCount})`}
+                />
+              </div>
+            )}
+
             <button
               type="submit"
               disabled={isLoading}
@@ -80,41 +140,107 @@ export default function ControlsBar({
                 color: '#ffffff',
                 border: '1px solid transparent',
               }}
-              title="Executar enfileirar(E item)"
+              title={
+                structureType === 'pilha'
+                  ? 'Executar empilhar(E item)'
+                  : structureType === 'lista'
+                  ? 'Executar inserir(E novo, int posicao)'
+                  : 'Executar enfileirar(E item)'
+              }
             >
-              + Enfileirar
+              {structureType === 'pilha'
+                ? '+ Empilhar'
+                : structureType === 'lista'
+                ? '+ Inserir na Posição'
+                : '+ Enfileirar'}
             </button>
           </form>
 
-          <button
-            type="button"
-            onClick={onDequeue}
-            disabled={isLoading}
-            className="px-3 py-1.5 text-sm font-medium rounded-lg transition cursor-pointer disabled:opacity-50"
-            style={{
-              backgroundColor: 'var(--bg-elevated)',
-              color: 'var(--text-primary)',
-              border: '1px solid var(--border-strong)',
-            }}
-            title="Executar desenfileirar()"
-          >
-            − Desenfileirar
-          </button>
+          {/* Secondary Structure-Specific Buttons */}
+          {structureType === 'fila' && (
+            <>
+              <button
+                type="button"
+                onClick={onDequeue}
+                disabled={isLoading}
+                className="px-3 py-1.5 text-sm font-medium rounded-lg transition cursor-pointer disabled:opacity-50"
+                style={{
+                  backgroundColor: 'var(--bg-elevated)',
+                  color: 'var(--text-primary)',
+                  border: '1px solid var(--border-strong)',
+                }}
+                title="Executar desenfileirar()"
+              >
+                − Desenfileirar
+              </button>
 
-          <button
-            type="button"
-            onClick={onPeek}
-            disabled={isLoading}
-            className="px-3 py-1.5 text-sm font-medium rounded-lg transition cursor-pointer disabled:opacity-50"
-            style={{
-              backgroundColor: 'var(--bg-elevated)',
-              color: 'var(--text-primary)',
-              border: '1px solid var(--border-primary)',
-            }}
-            title="Executar consultarPrimeiro()"
-          >
-            Consultar Primeiro
-          </button>
+              <button
+                type="button"
+                onClick={onPeek}
+                disabled={isLoading}
+                className="px-3 py-1.5 text-sm font-medium rounded-lg transition cursor-pointer disabled:opacity-50"
+                style={{
+                  backgroundColor: 'var(--bg-elevated)',
+                  color: 'var(--text-primary)',
+                  border: '1px solid var(--border-primary)',
+                }}
+                title="Executar consultarPrimeiro()"
+              >
+                Consultar Primeiro
+              </button>
+            </>
+          )}
+
+          {structureType === 'pilha' && (
+            <>
+              <button
+                type="button"
+                onClick={onPop}
+                disabled={isLoading}
+                className="px-3 py-1.5 text-sm font-medium rounded-lg transition cursor-pointer disabled:opacity-50"
+                style={{
+                  backgroundColor: 'var(--bg-elevated)',
+                  color: 'var(--text-primary)',
+                  border: '1px solid var(--border-strong)',
+                }}
+                title="Executar desempilhar()"
+              >
+                − Desempilhar
+              </button>
+
+              <button
+                type="button"
+                onClick={onPeekTop}
+                disabled={isLoading}
+                className="px-3 py-1.5 text-sm font-medium rounded-lg transition cursor-pointer disabled:opacity-50"
+                style={{
+                  backgroundColor: 'var(--bg-elevated)',
+                  color: 'var(--text-primary)',
+                  border: '1px solid var(--border-primary)',
+                }}
+                title="Executar consultarTopo()"
+              >
+                Consultar Topo
+              </button>
+            </>
+          )}
+
+          {structureType === 'lista' && (
+            <button
+              type="button"
+              onClick={handleListRemove}
+              disabled={isLoading}
+              className="px-3 py-1.5 text-sm font-medium rounded-lg transition cursor-pointer disabled:opacity-50"
+              style={{
+                backgroundColor: 'var(--bg-elevated)',
+                color: 'var(--text-primary)',
+                border: '1px solid var(--border-strong)',
+              }}
+              title="Executar remover(int posicao) usando a posição informada"
+            >
+              − Remover da Posição ({positionValue || 0})
+            </button>
+          )}
 
           <button
             type="button"
@@ -142,9 +268,9 @@ export default function ControlsBar({
             color: 'var(--text-secondary)',
             border: '1px solid var(--border-primary)',
           }}
-          title="Reiniciar a fila para o estado inicial (apenas célula sentinela)"
+          title="Reiniciar a estrutura para o estado inicial (apenas célula sentinela)"
         >
-          ↺ Reiniciar Fila
+          {resetLabel}
         </button>
       </div>
 
@@ -230,10 +356,16 @@ export default function ControlsBar({
 
         {/* Interactive Step Track + Speed */}
         <div className="flex flex-wrap items-center gap-3 text-xs">
-          {/* Clickable step markers */}
           {totalSteps > 0 && (
-            <div className="flex items-center gap-1.5" role="group" aria-label="Progresso dos passos">
-              <span className="font-mono-code" style={{ color: 'var(--text-secondary)' }}>
+            <div
+              className="flex items-center gap-1.5"
+              role="group"
+              aria-label="Progresso dos passos"
+            >
+              <span
+                className="font-mono-code"
+                style={{ color: 'var(--text-secondary)' }}
+              >
                 Passo{' '}
                 <strong style={{ color: 'var(--text-primary)' }}>
                   {currentStepIndex + 1}

@@ -27,7 +27,7 @@ export default function StepExplanation({ step, stepIndex = 0, totalSteps = 1 })
       }}
     >
       <div className="flex flex-col gap-3">
-        {/* Top Metadata: Step Note + Executed Line */}
+        {/* Top Metadata: Step + Executed Line */}
         <div className="flex flex-wrap items-center justify-between gap-2">
           <div className="flex flex-wrap items-center gap-2">
             <span
@@ -89,7 +89,7 @@ export default function StepExplanation({ step, stepIndex = 0, totalSteps = 1 })
               className="text-[11px] font-mono-code"
               style={{ color: 'var(--text-muted)' }}
             >
-              Nota {stepIndex + 1}/{totalSteps}
+              Passo {stepIndex + 1}/{totalSteps}
             </span>
           </div>
         </div>

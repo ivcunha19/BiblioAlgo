@@ -25,7 +25,7 @@ public class FilaService {
         
         StepSnapshot initialStep = StepSnapshot.builder()
                 .stepIndex(0)
-                .lineNumber(13)
+                .lineNumber(7)
                 .codeLine("frente = tras = sentinela;")
                 .method("construtor")
                 .description("Fila inicializada. Apenas a célula sentinela existe na memória; 'frente' e 'tras' apontam para ela.")
@@ -37,7 +37,7 @@ public class FilaService {
         steps.add(initialStep);
 
         return ExecutionTrace.builder()
-                .method("reset")
+                .method("construtor")
                 .steps(steps)
                 .success(true)
                 .message("Fila reiniciada com sucesso.")
@@ -48,9 +48,9 @@ public class FilaService {
         List<StepSnapshot> steps = new ArrayList<>();
         StepSnapshot step = StepSnapshot.builder()
                 .stepIndex(0)
-                .lineNumber(0)
-                .codeLine("")
-                .method("estadoAtual")
+                .lineNumber(7)
+                .codeLine("frente = tras = sentinela;")
+                .method("construtor")
                 .description("Estado atual da fila na memória.")
                 .nodes(captureCurrentNodes(null, null))
                 .pointers(capturePointers(null, null, null, null))
@@ -59,7 +59,7 @@ public class FilaService {
         steps.add(step);
 
         return ExecutionTrace.builder()
-                .method("estadoAtual")
+                .method("construtor")
                 .steps(steps)
                 .success(true)
                 .message("Estado atual obtido.")
@@ -70,10 +70,9 @@ public class FilaService {
         List<StepSnapshot> steps = new ArrayList<>();
         int stepIdx = 0;
 
-        // Linha 21: public void enfileirar(E item)
         steps.add(StepSnapshot.builder()
                 .stepIndex(stepIdx++)
-                .lineNumber(21)
+                .lineNumber(14)
                 .codeLine("public void enfileirar(E item) {")
                 .method("enfileirar")
                 .description("Início da execução de enfileirar. Parâmetro recebido: item = '" + item + "'.")
@@ -82,11 +81,10 @@ public class FilaService {
                 .variables(Map.of("item", item))
                 .build());
 
-        // Linha 23: Celula<E> novaCelula = new Celula<E>(item);
         Celula<Object> novaCelula = new Celula<>(item);
         steps.add(StepSnapshot.builder()
                 .stepIndex(stepIdx++)
-                .lineNumber(23)
+                .lineNumber(15)
                 .codeLine("Celula<E> novaCelula = new Celula<E>(item);")
                 .method("enfileirar")
                 .description("Alocada nova Célula na memória com item = '" + item + "' e proximo = null.")
@@ -95,11 +93,10 @@ public class FilaService {
                 .variables(Map.of("item", item, "novaCelula", novaCelula.getId()))
                 .build());
 
-        // Linha 25: tras.setProximo(novaCelula);
         fila.getTras().setProximo(novaCelula);
         steps.add(StepSnapshot.builder()
                 .stepIndex(stepIdx++)
-                .lineNumber(25)
+                .lineNumber(16)
                 .codeLine("tras.setProximo(novaCelula);")
                 .method("enfileirar")
                 .description("A célula apontada por 'tras' agora tem seu 'proximo' apontando para a 'novaCelula'.")
@@ -108,11 +105,10 @@ public class FilaService {
                 .variables(Map.of("item", item, "novaCelula", novaCelula.getId()))
                 .build());
 
-        // Linha 26: tras = tras.getProximo();
         fila.setTras(fila.getTras().getProximo());
         steps.add(StepSnapshot.builder()
                 .stepIndex(stepIdx++)
-                .lineNumber(26)
+                .lineNumber(17)
                 .codeLine("tras = tras.getProximo();")
                 .method("enfileirar")
                 .description("Atualizado o ponteiro 'tras' para apontar para a nova última célula (tras.getProximo()).")
@@ -121,10 +117,9 @@ public class FilaService {
                 .variables(Map.of("item", item, "novaCelula", novaCelula.getId()))
                 .build());
 
-        // Linha 27: }
         steps.add(StepSnapshot.builder()
                 .stepIndex(stepIdx++)
-                .lineNumber(27)
+                .lineNumber(18)
                 .codeLine("}")
                 .method("enfileirar")
                 .description("Fim do método enfileirar. A variável local 'novaCelula' sai de escopo.")
@@ -146,10 +141,9 @@ public class FilaService {
         List<StepSnapshot> steps = new ArrayList<>();
         int stepIdx = 0;
 
-        // Linha 29: public E desenfileirar()
         steps.add(StepSnapshot.builder()
                 .stepIndex(stepIdx++)
-                .lineNumber(29)
+                .lineNumber(20)
                 .codeLine("public E desenfileirar() {")
                 .method("desenfileirar")
                 .description("Início da execução de desenfileirar.")
@@ -158,10 +152,9 @@ public class FilaService {
                 .variables(Collections.emptyMap())
                 .build());
 
-        // Linha 31: E item = null;
         steps.add(StepSnapshot.builder()
                 .stepIndex(stepIdx++)
-                .lineNumber(31)
+                .lineNumber(21)
                 .codeLine("E item = null;")
                 .method("desenfileirar")
                 .description("Declaração da variável local 'item', inicializada como null.")
@@ -170,10 +163,9 @@ public class FilaService {
                 .variables(Collections.singletonMap("item", null))
                 .build());
 
-        // Linha 32: Celula<E> primeiro;
         steps.add(StepSnapshot.builder()
                 .stepIndex(stepIdx++)
-                .lineNumber(32)
+                .lineNumber(22)
                 .codeLine("Celula<E> primeiro;")
                 .method("desenfileirar")
                 .description("Declaração da referência local 'primeiro'.")
@@ -182,12 +174,10 @@ public class FilaService {
                 .variables(Collections.singletonMap("item", null))
                 .build());
 
-        // Linha 34: item = consultarPrimeiro();
         if (fila.vazia()) {
-            // Passo 50: if (vazia())
             steps.add(StepSnapshot.builder()
                     .stepIndex(stepIdx++)
-                    .lineNumber(50)
+                    .lineNumber(34)
                     .codeLine("if (vazia()) {")
                     .method("consultarPrimeiro")
                     .description("consultarPrimeiro(): avalia vazia() -> frente == tras é verdadeiro!")
@@ -196,10 +186,9 @@ public class FilaService {
                     .variables(Collections.singletonMap("item", null))
                     .build());
 
-            // Passo 51: throw new NoSuchElementException("Nao há nenhum item na fila!");
             steps.add(StepSnapshot.builder()
                     .stepIndex(stepIdx++)
-                    .lineNumber(51)
+                    .lineNumber(35)
                     .codeLine("throw new NoSuchElementException(\"Nao há nenhum item na fila!\");")
                     .method("consultarPrimeiro")
                     .description("Exceção lançada: Fila vazia! Não é possível desenfileirar.")
@@ -221,7 +210,7 @@ public class FilaService {
         Object item = fila.getFrente().getProximo().getItem();
         steps.add(StepSnapshot.builder()
                 .stepIndex(stepIdx++)
-                .lineNumber(34)
+                .lineNumber(23)
                 .codeLine("item = consultarPrimeiro();")
                 .method("desenfileirar")
                 .description("consultarPrimeiro() executado com sucesso: item = '" + item + "'.")
@@ -230,11 +219,10 @@ public class FilaService {
                 .variables(Map.of("item", item))
                 .build());
 
-        // Linha 36: primeiro = frente.getProximo();
         Celula<Object> primeiro = fila.getFrente().getProximo();
         steps.add(StepSnapshot.builder()
                 .stepIndex(stepIdx++)
-                .lineNumber(36)
+                .lineNumber(24)
                 .codeLine("primeiro = frente.getProximo();")
                 .method("desenfileirar")
                 .description("Referência 'primeiro' passa a apontar para a primeira célula válida (após a sentinela).")
@@ -243,11 +231,10 @@ public class FilaService {
                 .variables(Map.of("item", item, "primeiro", primeiro.getId()))
                 .build());
 
-        // Linha 37: frente.setProximo(primeiro.getProximo());
         fila.getFrente().setProximo(primeiro.getProximo());
         steps.add(StepSnapshot.builder()
                 .stepIndex(stepIdx++)
-                .lineNumber(37)
+                .lineNumber(25)
                 .codeLine("frente.setProximo(primeiro.getProximo());")
                 .method("desenfileirar")
                 .description("A sentinela 'frente' atualiza seu 'proximo' para 'primeiro.getProximo()', contornando 'primeiro'.")
@@ -256,11 +243,10 @@ public class FilaService {
                 .variables(Map.of("item", item, "primeiro", primeiro.getId()))
                 .build());
 
-        // Linha 39: primeiro.setProximo(null);
         primeiro.setProximo(null);
         steps.add(StepSnapshot.builder()
                 .stepIndex(stepIdx++)
-                .lineNumber(39)
+                .lineNumber(26)
                 .codeLine("primeiro.setProximo(null);")
                 .method("desenfileirar")
                 .description("Desconecta 'primeiro' da lista atribuindo null ao seu ponteiro 'proximo'.")
@@ -269,11 +255,10 @@ public class FilaService {
                 .variables(Map.of("item", item, "primeiro", primeiro.getId()))
                 .build());
 
-        // Linha 42: if (primeiro == tras)
         boolean eraUltimo = (primeiro == fila.getTras());
         steps.add(StepSnapshot.builder()
                 .stepIndex(stepIdx++)
-                .lineNumber(42)
+                .lineNumber(28)
                 .codeLine("if (primeiro == tras)")
                 .method("desenfileirar")
                 .description("Verifica se 'primeiro == tras'. " + (eraUltimo ? "Verdadeiro: o elemento removido era o único da fila!" : "Falso: ainda restam outros elementos."))
@@ -282,12 +267,11 @@ public class FilaService {
                 .variables(Map.of("item", item, "primeiro == tras", eraUltimo))
                 .build());
 
-        // Linha 43: tras = frente; (se eraUltimo)
         if (eraUltimo) {
             fila.setTras(fila.getFrente());
             steps.add(StepSnapshot.builder()
                     .stepIndex(stepIdx++)
-                    .lineNumber(43)
+                    .lineNumber(29)
                     .codeLine("tras = frente;")
                     .method("desenfileirar")
                     .description("Como a fila esvaziou, reajusta 'tras' para apontar de volta para a sentinela ('frente').")
@@ -297,14 +281,13 @@ public class FilaService {
                     .build());
         }
 
-        // Linha 45: return item;
         steps.add(StepSnapshot.builder()
                 .stepIndex(stepIdx++)
-                .lineNumber(45)
+                .lineNumber(30)
                 .codeLine("return item;")
                 .method("desenfileirar")
                 .description("Retorna o item removido: '" + item + "'. A célula 'primeiro' é liberada.")
-                .nodes(captureCurrentNodes(null, null)) // célula removida sai da memória
+                .nodes(captureCurrentNodes(null, null))
                 .pointers(capturePointers(null, null, null, null))
                 .variables(Map.of("item", item))
                 .returnValue(item)
@@ -325,7 +308,7 @@ public class FilaService {
 
         steps.add(StepSnapshot.builder()
                 .stepIndex(stepIdx++)
-                .lineNumber(48)
+                .lineNumber(33)
                 .codeLine("public E consultarPrimeiro() {")
                 .method("consultarPrimeiro")
                 .description("Início da execução de consultarPrimeiro().")
@@ -336,7 +319,7 @@ public class FilaService {
 
         steps.add(StepSnapshot.builder()
                 .stepIndex(stepIdx++)
-                .lineNumber(50)
+                .lineNumber(34)
                 .codeLine("if (vazia()) {")
                 .method("consultarPrimeiro")
                 .description("Verifica se a fila está vazia: vazia() -> " + fila.vazia())
@@ -348,7 +331,7 @@ public class FilaService {
         if (fila.vazia()) {
             steps.add(StepSnapshot.builder()
                     .stepIndex(stepIdx++)
-                    .lineNumber(51)
+                    .lineNumber(35)
                     .codeLine("throw new NoSuchElementException(\"Nao há nenhum item na fila!\");")
                     .method("consultarPrimeiro")
                     .description("Exceção lançada: Fila vazia!")
@@ -369,7 +352,7 @@ public class FilaService {
         Object item = fila.getFrente().getProximo().getItem();
         steps.add(StepSnapshot.builder()
                 .stepIndex(stepIdx++)
-                .lineNumber(54)
+                .lineNumber(37)
                 .codeLine("return frente.getProximo().getItem();")
                 .method("consultarPrimeiro")
                 .description("Retorna o item do primeiro nó real: '" + item + "'.")
@@ -394,7 +377,7 @@ public class FilaService {
 
         steps.add(StepSnapshot.builder()
                 .stepIndex(stepIdx++)
-                .lineNumber(16)
+                .lineNumber(10)
                 .codeLine("public boolean vazia() {")
                 .method("vazia")
                 .description("Início da verificação se a fila está vazia.")
@@ -405,7 +388,7 @@ public class FilaService {
 
         steps.add(StepSnapshot.builder()
                 .stepIndex(stepIdx++)
-                .lineNumber(18)
+                .lineNumber(11)
                 .codeLine("return (frente == tras);")
                 .method("vazia")
                 .description("Compara referências (frente == tras): " + estaVazia + ". " + 
@@ -428,7 +411,6 @@ public class FilaService {
         List<NodeSnapshot> nodes = new ArrayList<>();
         Set<String> visited = new HashSet<>();
 
-        // Percorre a partir de frente
         Celula<Object> aux = fila.getFrente();
         boolean isFirst = true;
         while (aux != null && !visited.contains(aux.getId())) {
@@ -445,7 +427,6 @@ public class FilaService {
             aux = aux.getProximo();
         }
 
-        // Se houver um nó recém-criado que ainda não está na cadeia
         if (novoNo != null && !visited.contains(novoNo.getId())) {
             nodes.add(NodeSnapshot.builder()
                     .id(novoNo.getId())
@@ -457,7 +438,6 @@ public class FilaService {
                     .build());
         }
 
-        // Se houver um nó removido desvinculado
         if (noRemovido != null && !visited.contains(noRemovido.getId())) {
             nodes.add(NodeSnapshot.builder()
                     .id(noRemovido.getId())
@@ -480,7 +460,7 @@ public class FilaService {
                     .nome("frente")
                     .targetNodeId(fila.getFrente().getId())
                     .tipo("atributo")
-                    .cor("#3b82f6") // Blue
+                    .cor("#3b82f6")
                     .build());
         }
 
@@ -489,7 +469,7 @@ public class FilaService {
                     .nome("tras")
                     .targetNodeId(fila.getTras().getId())
                     .tipo("atributo")
-                    .cor("#10b981") // Green
+                    .cor("#10b981")
                     .build());
         }
 
@@ -498,7 +478,7 @@ public class FilaService {
                     .nome(localName1)
                     .targetNodeId(localTarget1)
                     .tipo("variavel_local")
-                    .cor("#f59e0b") // Amber
+                    .cor("#f59e0b")
                     .build());
         }
 
@@ -507,7 +487,7 @@ public class FilaService {
                     .nome(localName2)
                     .targetNodeId(localTarget2)
                     .tipo("variavel_local")
-                    .cor("#8b5cf6") // Purple
+                    .cor("#8b5cf6")
                     .build());
         }
 

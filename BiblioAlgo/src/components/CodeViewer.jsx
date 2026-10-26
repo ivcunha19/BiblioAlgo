@@ -1,19 +1,17 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { QUEUE_JAVA_CODE } from '../data/queueCode';
+import { STRUCTURES_CATALOG } from '../data/queueCode';
 
-export default function CodeViewer({ currentLineNumber, activeMethod }) {
+export default function CodeViewer({
+  structureType = 'fila',
+  currentLineNumber,
+  activeMethod,
+}) {
   const [focusMethodOnly, setFocusMethodOnly] = useState(false);
   const activeLineRef = useRef(null);
   const containerRef = useRef(null);
 
-  const methodRanges = {
-    construtor: { start: 10, end: 14, name: 'Fila() [Construtor]' },
-    vazia: { start: 16, end: 19, name: 'vazia()' },
-    enfileirar: { start: 21, end: 27, name: 'enfileirar(E item)' },
-    desenfileirar: { start: 29, end: 46, name: 'desenfileirar()' },
-    consultarPrimeiro: { start: 48, end: 56, name: 'consultarPrimeiro()' },
-  };
-
+  const catalogEntry = STRUCTURES_CATALOG[structureType] || STRUCTURES_CATALOG.fila;
+  const { fileName, codeLines, methodRanges } = catalogEntry;
   const currentRange = methodRanges[activeMethod] || null;
 
   useEffect(() => {
@@ -23,11 +21,11 @@ export default function CodeViewer({ currentLineNumber, activeMethod }) {
         block: 'center',
       });
     }
-  }, [currentLineNumber]);
+  }, [currentLineNumber, structureType]);
 
   return (
     <section
-      aria-label="Código-Fonte Java (Fila.java)"
+      aria-label={`Código-Fonte Java (${fileName})`}
       className="flex flex-col h-full rounded-xl overflow-hidden"
       style={{
         backgroundColor: 'var(--bg-surface)',
@@ -35,7 +33,7 @@ export default function CodeViewer({ currentLineNumber, activeMethod }) {
         boxShadow: '0 1px 3px rgba(0, 0, 0, 0.04)',
       }}
     >
-      {/* Textbook Code Listing Header */}
+      {/* Code Header */}
       <div
         className="flex flex-wrap items-center justify-between gap-2 px-4 py-3"
         style={{
@@ -52,13 +50,13 @@ export default function CodeViewer({ currentLineNumber, activeMethod }) {
               border: '1px solid var(--border-primary)',
             }}
           >
-            Listagem 1.1
+            Código Java
           </span>
           <span
             className="font-mono-code text-xs sm:text-sm font-bold"
             style={{ color: 'var(--text-primary)' }}
           >
-            Fila.java
+            {fileName}
           </span>
           {activeMethod && (
             <span
@@ -96,7 +94,7 @@ export default function CodeViewer({ currentLineNumber, activeMethod }) {
         className="flex-1 overflow-auto p-3 font-mono-code text-xs sm:text-[13px] leading-relaxed"
         style={{ backgroundColor: 'var(--bg-code)' }}
       >
-        {QUEUE_JAVA_CODE.map((line, index) => {
+        {codeLines.map((line, index) => {
           const lineNumber = index + 1;
           const isActive = lineNumber === currentLineNumber;
           const isInActiveMethod =

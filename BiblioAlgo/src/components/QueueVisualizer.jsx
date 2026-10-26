@@ -1,21 +1,22 @@
 import React from 'react';
+import { STRUCTURES_CATALOG } from '../data/queueCode';
 
 function getPointerStyles(nome) {
-  if (nome === 'frente') {
+  if (nome === 'frente' || nome === 'topo' || nome === 'primeiro') {
     return {
       backgroundColor: 'var(--ptr-frente-bg)',
       color: 'var(--ptr-frente-text)',
       borderColor: 'var(--ptr-frente-border)',
     };
   }
-  if (nome === 'tras') {
+  if (nome === 'tras' || nome === 'fundo' || nome === 'ultimo') {
     return {
       backgroundColor: 'var(--ptr-tras-bg)',
       color: 'var(--ptr-tras-text)',
       borderColor: 'var(--ptr-tras-border)',
     };
   }
-  if (nome === 'novaCelula') {
+  if (nome === 'novaCelula' || nome === 'sentinela') {
     return {
       backgroundColor: 'var(--ptr-novo-bg)',
       color: 'var(--ptr-novo-text)',
@@ -29,7 +30,10 @@ function getPointerStyles(nome) {
   };
 }
 
-export default function QueueVisualizer({ step }) {
+export default function QueueVisualizer({ structureType = 'fila', step }) {
+  const catalogEntry = STRUCTURES_CATALOG[structureType] || STRUCTURES_CATALOG.fila;
+  const [primaryStartPtrName, primaryEndPtrName] = catalogEntry.primaryPointers;
+
   if (!step || !step.nodes) {
     return (
       <div
@@ -55,14 +59,21 @@ export default function QueueVisualizer({ step }) {
     pointersByNode[ptr.targetNodeId].push(ptr);
   });
 
-  const frentePtr = pointers.find((p) => p.nome === 'frente');
-  const trasPtr = pointers.find((p) => p.nome === 'tras');
-  const isFrenteEqualTras =
-    frentePtr && trasPtr && frentePtr.targetNodeId === trasPtr.targetNodeId;
+  const startPtr = pointers.find((p) => p.nome === primaryStartPtrName);
+  const endPtr = pointers.find((p) => p.nome === primaryEndPtrName);
+  const isStructureEmpty =
+    startPtr && endPtr && startPtr.targetNodeId === endPtr.targetNodeId;
+
   const activeItemsCount = Math.max(
     0,
     nodes.filter((n) => !n.sentinela && !n.removido && !n.novo).length
   );
+
+  const localPointers = pointers.filter(
+    (p) => p.nome !== primaryStartPtrName && p.nome !== primaryEndPtrName
+  );
+
+  let logicalPosCounter = 0;
 
   return (
     <section
@@ -81,68 +92,77 @@ export default function QueueVisualizer({ step }) {
       >
         <div>
           <div className="flex flex-wrap items-center gap-2">
-            <span
-              className="text-[11px] font-mono-code uppercase tracking-wider px-2 py-0.5 rounded"
-              style={{
-                backgroundColor: 'var(--bg-elevated)',
-                color: 'var(--text-secondary)',
-                border: '1px solid var(--border-primary)',
-              }}
-            >
-              Figura 1.1
-            </span>
             <h2
               className="text-base sm:text-lg font-bold font-serif-library"
               style={{ color: 'var(--text-primary)' }}
             >
-              Representação na Memória (Heap)
+              Estrutura na Memória (Heap)
             </h2>
+            {structureType === 'lista' && (
+              <span
+                className="text-xs font-mono-code font-semibold px-2 py-0.5 rounded"
+                style={{
+                  backgroundColor: 'var(--accent-primary-soft)',
+                  color: 'var(--accent-primary)',
+                  border: '1px solid var(--border-primary)',
+                }}
+              >
+                tamanho = {activeItemsCount}
+              </span>
+            )}
           </div>
           <p className="text-xs mt-1" style={{ color: 'var(--text-secondary)' }}>
-            {isFrenteEqualTras ? (
+            {isStructureEmpty ? (
               <span>
-                Invariante atual: <code className="font-mono-code font-semibold">frente == tras</code>{' '}
-                (Fila logicamente vazia — apenas nó sentinela)
+                Estado atual:{' '}
+                <code className="font-mono-code font-semibold">
+                  {catalogEntry.emptyInvariantText}
+                </code>{' '}
+                (Vazia — apenas célula sentinela)
               </span>
             ) : (
               <span>
-                Fila com <strong>{activeItemsCount}</strong>{' '}
-                {activeItemsCount === 1 ? 'elemento útil' : 'elementos úteis'} após a célula sentinela
+                <strong>{activeItemsCount}</strong>{' '}
+                {activeItemsCount === 1 ? 'célula útil' : 'células úteis'}{' '}
+                {structureType === 'pilha'
+                  ? 'acima da sentinela (fundo)'
+                  : 'após a célula sentinela'}
               </span>
             )}
           </p>
         </div>
 
-        {/* Clean Textbook Legend */}
+        {/* Pointer Legend */}
         <div className="flex flex-wrap items-center gap-1.5 text-xs font-mono-code">
           <span
             className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded border font-medium"
-            style={getPointerStyles('frente')}
+            style={getPointerStyles(primaryStartPtrName)}
           >
-            <span>↓</span> frente
+            <span>↓</span> {primaryStartPtrName}
           </span>
           <span
             className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded border font-medium"
-            style={getPointerStyles('tras')}
+            style={getPointerStyles(primaryEndPtrName)}
           >
-            <span>↓</span> tras
+            <span>↓</span> {primaryEndPtrName}
           </span>
-          {pointers.some((p) => p.nome === 'novaCelula') && (
+          {localPointers.map((ptr) => (
             <span
+              key={ptr.nome}
               className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded border font-medium"
-              style={getPointerStyles('novaCelula')}
+              style={
+                ptr.nome === 'novaCelula' || ptr.nome === 'sentinela'
+                  ? getPointerStyles('novaCelula')
+                  : {
+                      backgroundColor: 'var(--ptr-primeiro-bg)',
+                      color: 'var(--ptr-primeiro-text)',
+                      borderColor: 'var(--ptr-primeiro-border)',
+                    }
+              }
             >
-              <span>↓</span> novaCelula
+              <span>↓</span> {ptr.nome}
             </span>
-          )}
-          {pointers.some((p) => p.nome === 'primeiro') && (
-            <span
-              className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded border font-medium"
-              style={getPointerStyles('primeiro')}
-            >
-              <span>↓</span> primeiro
-            </span>
-          )}
+          ))}
         </div>
       </div>
 
@@ -157,6 +177,9 @@ export default function QueueVisualizer({ step }) {
             const isSentinela = node.sentinela;
             const isNovo = node.novo;
             const isRemovido = node.removido;
+
+            const currentLogicalPos =
+              !isSentinela && !isRemovido ? logicalPosCounter++ : null;
 
             let cardBorderColor = 'var(--border-strong)';
             let headerBg = 'var(--bg-elevated)';
@@ -181,16 +204,31 @@ export default function QueueVisualizer({ step }) {
                 <div className="flex flex-col items-center relative">
                   {/* Pointers pointing to this cell */}
                   <div className="min-h-[54px] flex flex-col items-center justify-end gap-1 mb-2">
-                    {nodePointers.map((ptr) => (
-                      <div
-                        key={ptr.nome}
-                        className="px-2.5 py-0.5 text-xs font-mono-code font-bold rounded border flex items-center gap-1 transition-all duration-200"
-                        style={getPointerStyles(ptr.nome)}
-                      >
-                        <span aria-hidden="true">↓</span>
-                        <span>{ptr.nome}</span>
-                      </div>
-                    ))}
+                    {nodePointers.map((ptr) => {
+                      const isPrimary =
+                        ptr.nome === primaryStartPtrName ||
+                        ptr.nome === primaryEndPtrName;
+                      const badgeStyle = isPrimary
+                        ? getPointerStyles(ptr.nome)
+                        : ptr.nome === 'novaCelula' || ptr.nome === 'sentinela'
+                        ? getPointerStyles('novaCelula')
+                        : {
+                            backgroundColor: 'var(--ptr-primeiro-bg)',
+                            color: 'var(--ptr-primeiro-text)',
+                            borderColor: 'var(--ptr-primeiro-border)',
+                          };
+
+                      return (
+                        <div
+                          key={ptr.nome}
+                          className="px-2.5 py-0.5 text-xs font-mono-code font-bold rounded border flex items-center gap-1 transition-all duration-200"
+                          style={badgeStyle}
+                        >
+                          <span aria-hidden="true">↓</span>
+                          <span>{ptr.nome}</span>
+                        </div>
+                      );
+                    })}
                   </div>
 
                   {/* Memory Cell Box: [ item | proximo ] */}
@@ -221,6 +259,8 @@ export default function QueueVisualizer({ step }) {
                           ? '✨ Nova Célula'
                           : isRemovido
                           ? '🗑️ Removida'
+                          : structureType === 'lista' && currentLogicalPos !== null
+                          ? `Posição [${currentLogicalPos}]`
                           : `Célula [${index}]`}
                       </span>
                       <span className="text-[10px] opacity-80">#{node.id}</span>
@@ -267,7 +307,9 @@ export default function QueueVisualizer({ step }) {
                         <span className="font-mono-code text-xs font-semibold mt-0.5 flex items-center gap-1">
                           {node.proximoId ? (
                             <>
-                              <span style={{ color: 'var(--accent-secondary)' }}>●</span>
+                              <span style={{ color: 'var(--accent-secondary)' }}>
+                                ●
+                              </span>
                               <span style={{ color: 'var(--text-primary)' }}>
                                 #{node.proximoId}
                               </span>
@@ -290,7 +332,13 @@ export default function QueueVisualizer({ step }) {
                     className="mt-2 min-h-[18px] text-[11px] font-mono-code text-center"
                     style={{ color: 'var(--text-secondary)' }}
                   >
-                    {isSentinela && <span>(cabeça fixa)</span>}
+                    {isSentinela && (
+                      <span>
+                        {structureType === 'pilha'
+                          ? '(base / fundo)'
+                          : '(cabeça fixa)'}
+                      </span>
+                    )}
                     {isNovo && (
                       <span style={{ color: 'var(--ptr-novo-text)' }}>
                         (recém-alocada)
@@ -301,8 +349,17 @@ export default function QueueVisualizer({ step }) {
                         (desvinculada)
                       </span>
                     )}
-                    {!isSentinela && !isNovo && !isRemovido && index === 1 && (
-                      <span>(1º da fila)</span>
+                    {!isSentinela && !isNovo && !isRemovido && (
+                      <span>
+                        {structureType === 'pilha' && index === 0
+                          ? '(topo atual)'
+                          : structureType === 'fila' && index === 1
+                          ? '(1º da fila)'
+                          : structureType === 'lista' &&
+                            currentLogicalPos !== null
+                          ? `índice ${currentLogicalPos}`
+                          : ''}
+                      </span>
                     )}
                   </div>
                 </div>

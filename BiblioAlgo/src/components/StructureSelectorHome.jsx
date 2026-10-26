@@ -1,0 +1,192 @@
+import React from 'react';
+import { STRUCTURES_CATALOG } from '../data/queueCode';
+
+const STRUCTURE_KEYS = ['fila', 'pilha', 'lista'];
+
+export default function StructureSelectorHome({ onSelectStructure }) {
+  return (
+    <main className="flex-1 max-w-6xl w-full mx-auto px-4 sm:px-6 py-8 sm:py-12 flex flex-col gap-8">
+      {/* Intro Section */}
+      <section className="max-w-2xl flex flex-col gap-2">
+        <span
+          className="text-xs font-mono-code uppercase tracking-wider font-semibold"
+          style={{ color: 'var(--accent-primary)' }}
+        >
+          Visualizador Passo a Passo de Estruturas de Dados
+        </span>
+        <h2
+          className="text-2xl sm:text-3xl font-bold font-serif-library tracking-tight"
+          style={{ color: 'var(--text-primary)' }}
+        >
+          Escolha uma estrutura para estudar
+        </h2>
+        <p
+          className="text-sm sm:text-base leading-relaxed"
+          style={{ color: 'var(--text-secondary)' }}
+        >
+          Selecione uma das estruturas dinâmicas encadeadas abaixo para executar
+          suas operações, acompanhar a alocação de células na memória e observar
+          a execução linha a linha do código em Java.
+        </p>
+      </section>
+
+      {/* Structure Cards Grid */}
+      <section
+        aria-label="Estruturas de Dados Disponíveis"
+        className="grid grid-cols-1 md:grid-cols-3 gap-5 items-stretch"
+      >
+        {STRUCTURE_KEYS.map((key) => {
+          const item = STRUCTURES_CATALOG[key];
+          const [ptrA, ptrB] = item.primaryPointers;
+
+          return (
+            <article
+              key={item.id}
+              className="rounded-xl p-5 sm:p-6 flex flex-col justify-between gap-5 transition-all"
+              style={{
+                backgroundColor: 'var(--bg-surface)',
+                border: '1px solid var(--border-primary)',
+                boxShadow: '0 2px 6px rgba(0, 0, 0, 0.04)',
+              }}
+            >
+              <div className="flex flex-col gap-4">
+                {/* Top Metadata Row */}
+                <div className="flex items-center justify-between gap-2">
+                  <span
+                    className="text-xs font-mono-code font-semibold px-2.5 py-0.5 rounded"
+                    style={{
+                      backgroundColor: 'var(--accent-secondary-soft)',
+                      color: 'var(--accent-secondary)',
+                      border: '1px solid var(--border-primary)',
+                    }}
+                  >
+                    {item.fileName}
+                  </span>
+
+                  <span
+                    className="text-xs font-mono-code font-bold px-2 py-0.5 rounded"
+                    style={{
+                      backgroundColor: 'var(--bg-elevated)',
+                      color: 'var(--text-primary)',
+                      border: '1px solid var(--border-primary)',
+                    }}
+                    title="Complexidade das operações principais"
+                  >
+                    Complexidade {item.complexityTag}
+                  </span>
+                </div>
+
+                {/* Title & Policy */}
+                <div>
+                  <h3
+                    className="text-xl font-bold font-serif-library"
+                    style={{ color: 'var(--text-primary)' }}
+                  >
+                    {item.title}
+                  </h3>
+                  <p
+                    className="text-xs font-mono-code mt-1"
+                    style={{ color: 'var(--accent-primary)' }}
+                  >
+                    {item.policyTag}
+                  </p>
+                </div>
+
+                {/* Description */}
+                <p
+                  className="text-xs sm:text-sm leading-relaxed"
+                  style={{ color: 'var(--text-secondary)' }}
+                >
+                  {item.summary}
+                </p>
+
+                {/* Pointers & Empty Invariant Box */}
+                <div
+                  className="p-3 rounded-lg flex flex-col gap-2 text-xs font-mono-code"
+                  style={{
+                    backgroundColor: 'var(--bg-page)',
+                    border: '1px solid var(--border-subtle)',
+                  }}
+                >
+                  <div className="flex items-center justify-between">
+                    <span style={{ color: 'var(--text-muted)' }}>Ponteiros:</span>
+                    <div className="flex items-center gap-1.5">
+                      <span
+                        className="px-1.5 py-0.5 rounded border font-semibold"
+                        style={{
+                          backgroundColor: 'var(--ptr-frente-bg)',
+                          color: 'var(--ptr-frente-text)',
+                          borderColor: 'var(--ptr-frente-border)',
+                        }}
+                      >
+                        {ptrA}
+                      </span>
+                      <span
+                        className="px-1.5 py-0.5 rounded border font-semibold"
+                        style={{
+                          backgroundColor: 'var(--ptr-tras-bg)',
+                          color: 'var(--ptr-tras-text)',
+                          borderColor: 'var(--ptr-tras-border)',
+                        }}
+                      >
+                        {ptrB}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center justify-between">
+                    <span style={{ color: 'var(--text-muted)' }}>
+                      Condição vazia:
+                    </span>
+                    <strong style={{ color: 'var(--text-primary)' }}>
+                      {item.emptyInvariantText}
+                    </strong>
+                  </div>
+                </div>
+
+                {/* Methods List */}
+                <div className="flex flex-col gap-1.5">
+                  <span
+                    className="text-[11px] font-mono-code uppercase tracking-wider font-semibold"
+                    style={{ color: 'var(--text-muted)' }}
+                  >
+                    Métodos implementados:
+                  </span>
+                  <div className="flex flex-wrap gap-1.5">
+                    {item.operationsList.map((opName) => (
+                      <code
+                        key={opName}
+                        className="text-xs font-mono-code px-2 py-0.5 rounded"
+                        style={{
+                          backgroundColor: 'var(--bg-elevated)',
+                          color: 'var(--text-primary)',
+                          border: '1px solid var(--border-primary)',
+                        }}
+                      >
+                        {opName}
+                      </code>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              {/* Action Button */}
+              <button
+                type="button"
+                onClick={() => onSelectStructure(item.id)}
+                className="w-full py-2.5 px-4 rounded-lg text-sm font-semibold transition cursor-pointer flex items-center justify-center gap-2"
+                style={{
+                  backgroundColor: 'var(--accent-primary)',
+                  color: '#ffffff',
+                }}
+              >
+                <span>Abrir {item.title}</span>
+                <span aria-hidden="true">→</span>
+              </button>
+            </article>
+          );
+        })}
+      </section>
+    </main>
+  );
+}
