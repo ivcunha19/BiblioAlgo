@@ -7,6 +7,7 @@ import ThemeToggle from './components/ThemeToggle';
 import StructureSelectorHome from './components/StructureSelectorHome';
 import { useQueueSimulation } from './hooks/useQueueSimulation';
 import { STRUCTURES_CATALOG } from './data/queueCode';
+import logoImg from './assets/logo.png';
 
 function StructureWorkspace({ selectedStructure, onBackToHome }) {
   const {
@@ -152,7 +153,7 @@ function StructureWorkspace({ selectedStructure, onBackToHome }) {
             className="text-xs font-mono-code uppercase tracking-wider font-semibold"
             style={{ color: 'var(--text-muted)' }}
           >
-             Conceitos Principais — {currentCatalog.title}
+            Conceitos Principais — {currentCatalog.title}
           </span>
         </div>
 
@@ -216,15 +217,19 @@ export default function App() {
             title="Voltar para a página inicial de estruturas"
           >
             <div
-              className="w-9 h-9 rounded-lg flex items-center justify-center font-serif-library font-bold text-base shrink-0"
+              className="w-10 h-10 rounded-lg flex items-center justify-center p-1.5 shrink-0"
               style={{
-                backgroundColor: 'var(--accent-primary-soft)',
-                color: 'var(--accent-primary)',
+                backgroundColor: 'var(--bg-elevated)',
                 border: '1px solid var(--border-strong)',
               }}
-              aria-hidden="true"
             >
-              BA
+              <img
+                src={logoImg}
+                alt="Logo BiblioAlgo"
+                width="28"
+                height="28"
+                className="w-7 h-7 object-contain logo-adaptive"
+              />
             </div>
             <div>
               <h1 className="text-lg sm:text-xl font-bold font-serif-library tracking-tight">
@@ -254,14 +259,24 @@ export default function App() {
 
       {/* Footer */}
       <footer
-        className="py-4 text-center text-xs"
+        className="py-4 px-4 text-xs"
         style={{
           borderTop: '1px solid var(--border-primary)',
           color: 'var(--text-muted)',
           backgroundColor: 'var(--bg-surface)',
         }}
       >
-        BiblioAlgo — Visualizador Didático de Estruturas de Dados
+        <div className="max-w-7xl mx-auto flex items-center justify-center gap-2">
+          <img
+            src={logoImg}
+            alt=""
+            aria-hidden="true"
+            width="18"
+            height="18"
+            className="w-4 h-4 object-contain opacity-75 logo-adaptive"
+          />
+          <span>BiblioAlgo — Visualizador Didático de Estruturas de Dados</span>
+        </div>
       </footer>
     </div>
   );

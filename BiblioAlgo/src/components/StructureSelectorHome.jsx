@@ -1,33 +1,60 @@
 import React from 'react';
 import { STRUCTURES_CATALOG } from '../data/queueCode';
+import logoImg from '../assets/logo.png';
 
 const STRUCTURE_KEYS = ['fila', 'pilha', 'lista'];
 
 export default function StructureSelectorHome({ onSelectStructure }) {
   return (
     <main className="flex-1 max-w-6xl w-full mx-auto px-4 sm:px-6 py-8 sm:py-12 flex flex-col gap-8">
-      {/* Intro Section */}
-      <section className="max-w-2xl flex flex-col gap-2">
-        <span
-          className="text-xs font-mono-code uppercase tracking-wider font-semibold"
-          style={{ color: 'var(--accent-primary)' }}
+      {/* Intro Hero Banner with Logo */}
+      <section
+        className="rounded-xl p-6 sm:p-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6"
+        style={{
+          backgroundColor: 'var(--bg-surface)',
+          border: '1px solid var(--border-primary)',
+          boxShadow: '0 2px 6px rgba(0, 0, 0, 0.04)',
+        }}
+      >
+        <div className="max-w-2xl flex flex-col gap-2">
+          <span
+            className="text-xs font-mono-code uppercase tracking-wider font-semibold"
+            style={{ color: 'var(--accent-primary)' }}
+          >
+            Visualizador Passo a Passo de Estruturas de Dados
+          </span>
+          <h2
+            className="text-2xl sm:text-3xl font-bold font-serif-library tracking-tight"
+            style={{ color: 'var(--text-primary)' }}
+          >
+            Escolha uma estrutura para estudar
+          </h2>
+          <p
+            className="text-sm sm:text-base leading-relaxed"
+            style={{ color: 'var(--text-secondary)' }}
+          >
+            Selecione uma das estruturas dinâmicas encadeadas abaixo para executar
+            suas operações, acompanhar a alocação de células na memória e observar
+            a execução linha a linha do código em Java.
+          </p>
+        </div>
+
+        <div
+          className="hidden sm:flex w-20 h-20 rounded-2xl items-center justify-center p-3.5 shrink-0"
+          style={{
+            backgroundColor: 'var(--bg-elevated)',
+            border: '1px solid var(--border-primary)',
+          }}
+          aria-hidden="true"
         >
-          Visualizador Passo a Passo de Estruturas de Dados
-        </span>
-        <h2
-          className="text-2xl sm:text-3xl font-bold font-serif-library tracking-tight"
-          style={{ color: 'var(--text-primary)' }}
-        >
-          Escolha uma estrutura para estudar
-        </h2>
-        <p
-          className="text-sm sm:text-base leading-relaxed"
-          style={{ color: 'var(--text-secondary)' }}
-        >
-          Selecione uma das estruturas dinâmicas encadeadas abaixo para executar
-          suas operações, acompanhar a alocação de células na memória e observar
-          a execução linha a linha do código em Java.
-        </p>
+          <img
+            src={logoImg}
+            alt=""
+            width="56"
+            height="56"
+            className="w-14 h-14 object-contain logo-adaptive"
+          />
+        </div>
       </section>
 
       {/* Structure Cards Grid */}

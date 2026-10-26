@@ -141,8 +141,11 @@
   --danger-text: var(--danger-text-light);
   --danger-border: var(--danger-border-light);
 
+  --logo-filter: none;
+
   /* MANDATORY: Fallback for browsers without light-dark() support */
   @media (prefers-color-scheme: dark) {
+    --logo-filter: invert(0.92) sepia(0.08);
     --bg-page: var(--bg-page-dark);
     --bg-surface: var(--bg-surface-dark);
     --bg-elevated: var(--bg-elevated-dark);
@@ -191,6 +194,7 @@
 
   /* Explicit manual override fallbacks for older browsers without light-dark() */
   &:has(> head > meta[name="color-scheme"][content="dark"]) {
+    --logo-filter: invert(0.92) sepia(0.08);
     --bg-page: var(--bg-page-dark);
     --bg-surface: var(--bg-surface-dark);
     --bg-elevated: var(--bg-elevated-dark);
@@ -238,6 +242,7 @@
   }
 
   &:has(> head > meta[name="color-scheme"][content="light"]) {
+    --logo-filter: none;
     --bg-page: var(--bg-page-light);
     --bg-surface: var(--bg-surface-light);
     --bg-elevated: var(--bg-elevated-light);
@@ -366,4 +371,9 @@ body {
   background-color: var(--bg-canvas);
   background-image: radial-gradient(var(--border-primary) 1px, transparent 1px);
   background-size: 20px 20px;
+}
+
+.logo-adaptive {
+  filter: var(--logo-filter);
+  transition: filter 0.2s ease;
 }
