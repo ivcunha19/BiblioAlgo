@@ -1,1 +1,369 @@
 @import "tailwindcss";
+
+:root {
+  /* Raw tokens — Light Mode (Papel de Biblioteca / Leitura Diurna) */
+  --bg-page-light: #f7f3eb;
+  --bg-surface-light: #fffdf9;
+  --bg-elevated-light: #f0eadc;
+  --bg-subtle-light: #ebe3d3;
+  --bg-code-light: #faf6ee;
+  --bg-canvas-light: #f4efe4;
+
+  --text-primary-light: #1f1b16;
+  --text-secondary-light: #524a3e;
+  --text-muted-light: #786e5f;
+
+  --border-primary-light: #d6cbb9;
+  --border-strong-light: #b5a790;
+  --border-subtle-light: #e5dec9;
+
+  --accent-primary-light: #7c2d12;
+  --accent-primary-hover-light: #63220d;
+  --accent-primary-soft-light: #f9ebe5;
+  --accent-secondary-light: #1e3a5f;
+  --accent-secondary-soft-light: #e6eef8;
+
+  /* Semantic tokens — Light Mode */
+  --ptr-frente-bg-light: #e0ecff;
+  --ptr-frente-text-light: #1e3a8a;
+  --ptr-frente-border-light: #3b82f6;
+
+  --ptr-tras-bg-light: #dcfce7;
+  --ptr-tras-text-light: #065f46;
+  --ptr-tras-border-light: #10b981;
+
+  --ptr-novo-bg-light: #fef3c7;
+  --ptr-novo-text-light: #78350f;
+  --ptr-novo-border-light: #d97706;
+
+  --ptr-primeiro-bg-light: #f3e8ff;
+  --ptr-primeiro-text-light: #581c87;
+  --ptr-primeiro-border-light: #9333ea;
+
+  --highlight-line-bg-light: #fef0c7;
+  --highlight-line-border-light: #b45309;
+  --highlight-line-text-light: #451a03;
+
+  --danger-bg-light: #fee2e2;
+  --danger-text-light: #7f1d1d;
+  --danger-border-light: #dc2626;
+
+  /* Raw tokens — Dark Mode (Sala de Leitura Noturna) */
+  --bg-page-dark: #161513;
+  --bg-surface-dark: #201e1b;
+  --bg-elevated-dark: #292622;
+  --bg-subtle-dark: #312d28;
+  --bg-code-dark: #1a1816;
+  --bg-canvas-dark: #191715;
+
+  --text-primary-dark: #ede8df;
+  --text-secondary-dark: #b8b0a2;
+  --text-muted-dark: #877f72;
+
+  --border-primary-dark: #3a352f;
+  --border-strong-dark: #544d44;
+  --border-subtle-dark: #2c2824;
+
+  --accent-primary-dark: #e07a5f;
+  --accent-primary-hover-dark: #ec927a;
+  --accent-primary-soft-dark: #38221c;
+  --accent-secondary-dark: #7aa2f7;
+  --accent-secondary-soft-dark: #1d273b;
+
+  /* Semantic tokens — Dark Mode */
+  --ptr-frente-bg-dark: #172554;
+  --ptr-frente-text-dark: #93c5fd;
+  --ptr-frente-border-dark: #3b82f6;
+
+  --ptr-tras-bg-dark: #064e3b;
+  --ptr-tras-text-dark: #6ee7b7;
+  --ptr-tras-border-dark: #10b981;
+
+  --ptr-novo-bg-dark: #451a03;
+  --ptr-novo-text-dark: #fcd34d;
+  --ptr-novo-border-dark: #f59e0b;
+
+  --ptr-primeiro-bg-dark: #3b0764;
+  --ptr-primeiro-text-dark: #d8b4fe;
+  --ptr-primeiro-border-dark: #a855f7;
+
+  --highlight-line-bg-dark: #3b2a10;
+  --highlight-line-border-dark: #f59e0b;
+  --highlight-line-text-dark: #fef3c7;
+
+  --danger-bg-dark: #3f1518;
+  --danger-text-dark: #fecaca;
+  --danger-border-dark: #ef4444;
+
+  /* Default fallback assignments (Light Mode) */
+  --bg-page: var(--bg-page-light);
+  --bg-surface: var(--bg-surface-light);
+  --bg-elevated: var(--bg-elevated-light);
+  --bg-subtle: var(--bg-subtle-light);
+  --bg-code: var(--bg-code-light);
+  --bg-canvas: var(--bg-canvas-light);
+
+  --text-primary: var(--text-primary-light);
+  --text-secondary: var(--text-secondary-light);
+  --text-muted: var(--text-muted-light);
+
+  --border-primary: var(--border-primary-light);
+  --border-strong: var(--border-strong-light);
+  --border-subtle: var(--border-subtle-light);
+
+  --accent-primary: var(--accent-primary-light);
+  --accent-primary-hover: var(--accent-primary-hover-light);
+  --accent-primary-soft: var(--accent-primary-soft-light);
+  --accent-secondary: var(--accent-secondary-light);
+  --accent-secondary-soft: var(--accent-secondary-soft-light);
+
+  --ptr-frente-bg: var(--ptr-frente-bg-light);
+  --ptr-frente-text: var(--ptr-frente-text-light);
+  --ptr-frente-border: var(--ptr-frente-border-light);
+
+  --ptr-tras-bg: var(--ptr-tras-bg-light);
+  --ptr-tras-text: var(--ptr-tras-text-light);
+  --ptr-tras-border: var(--ptr-tras-border-light);
+
+  --ptr-novo-bg: var(--ptr-novo-bg-light);
+  --ptr-novo-text: var(--ptr-novo-text-light);
+  --ptr-novo-border: var(--ptr-novo-border-light);
+
+  --ptr-primeiro-bg: var(--ptr-primeiro-bg-light);
+  --ptr-primeiro-text: var(--ptr-primeiro-text-light);
+  --ptr-primeiro-border: var(--ptr-primeiro-border-light);
+
+  --highlight-line-bg: var(--highlight-line-bg-light);
+  --highlight-line-border: var(--highlight-line-border-light);
+  --highlight-line-text: var(--highlight-line-text-light);
+
+  --danger-bg: var(--danger-bg-light);
+  --danger-text: var(--danger-text-light);
+  --danger-border: var(--danger-border-light);
+
+  /* MANDATORY: Fallback for browsers without light-dark() support */
+  @media (prefers-color-scheme: dark) {
+    --bg-page: var(--bg-page-dark);
+    --bg-surface: var(--bg-surface-dark);
+    --bg-elevated: var(--bg-elevated-dark);
+    --bg-subtle: var(--bg-subtle-dark);
+    --bg-code: var(--bg-code-dark);
+    --bg-canvas: var(--bg-canvas-dark);
+
+    --text-primary: var(--text-primary-dark);
+    --text-secondary: var(--text-secondary-dark);
+    --text-muted: var(--text-muted-dark);
+
+    --border-primary: var(--border-primary-dark);
+    --border-strong: var(--border-strong-dark);
+    --border-subtle: var(--border-subtle-dark);
+
+    --accent-primary: var(--accent-primary-dark);
+    --accent-primary-hover: var(--accent-primary-hover-dark);
+    --accent-primary-soft: var(--accent-primary-soft-dark);
+    --accent-secondary: var(--accent-secondary-dark);
+    --accent-secondary-soft: var(--accent-secondary-soft-dark);
+
+    --ptr-frente-bg: var(--ptr-frente-bg-dark);
+    --ptr-frente-text: var(--ptr-frente-text-dark);
+    --ptr-frente-border: var(--ptr-frente-border-dark);
+
+    --ptr-tras-bg: var(--ptr-tras-bg-dark);
+    --ptr-tras-text: var(--ptr-tras-text-dark);
+    --ptr-tras-border: var(--ptr-tras-border-dark);
+
+    --ptr-novo-bg: var(--ptr-novo-bg-dark);
+    --ptr-novo-text: var(--ptr-novo-text-dark);
+    --ptr-novo-border: var(--ptr-novo-border-dark);
+
+    --ptr-primeiro-bg: var(--ptr-primeiro-bg-dark);
+    --ptr-primeiro-text: var(--ptr-primeiro-text-dark);
+    --ptr-primeiro-border: var(--ptr-primeiro-border-dark);
+
+    --highlight-line-bg: var(--highlight-line-bg-dark);
+    --highlight-line-border: var(--highlight-line-border-dark);
+    --highlight-line-text: var(--highlight-line-text-dark);
+
+    --danger-bg: var(--danger-bg-dark);
+    --danger-text: var(--danger-text-dark);
+    --danger-border: var(--danger-border-dark);
+  }
+
+  /* Explicit manual override fallbacks for older browsers without light-dark() */
+  &:has(> head > meta[name="color-scheme"][content="dark"]) {
+    --bg-page: var(--bg-page-dark);
+    --bg-surface: var(--bg-surface-dark);
+    --bg-elevated: var(--bg-elevated-dark);
+    --bg-subtle: var(--bg-subtle-dark);
+    --bg-code: var(--bg-code-dark);
+    --bg-canvas: var(--bg-canvas-dark);
+
+    --text-primary: var(--text-primary-dark);
+    --text-secondary: var(--text-secondary-dark);
+    --text-muted: var(--text-muted-dark);
+
+    --border-primary: var(--border-primary-dark);
+    --border-strong: var(--border-strong-dark);
+    --border-subtle: var(--border-subtle-dark);
+
+    --accent-primary: var(--accent-primary-dark);
+    --accent-primary-hover: var(--accent-primary-hover-dark);
+    --accent-primary-soft: var(--accent-primary-soft-dark);
+    --accent-secondary: var(--accent-secondary-dark);
+    --accent-secondary-soft: var(--accent-secondary-soft-dark);
+
+    --ptr-frente-bg: var(--ptr-frente-bg-dark);
+    --ptr-frente-text: var(--ptr-frente-text-dark);
+    --ptr-frente-border: var(--ptr-frente-border-dark);
+
+    --ptr-tras-bg: var(--ptr-tras-bg-dark);
+    --ptr-tras-text: var(--ptr-tras-text-dark);
+    --ptr-tras-border: var(--ptr-tras-border-dark);
+
+    --ptr-novo-bg: var(--ptr-novo-bg-dark);
+    --ptr-novo-text: var(--ptr-novo-text-dark);
+    --ptr-novo-border: var(--ptr-novo-border-dark);
+
+    --ptr-primeiro-bg: var(--ptr-primeiro-bg-dark);
+    --ptr-primeiro-text: var(--ptr-primeiro-text-dark);
+    --ptr-primeiro-border: var(--ptr-primeiro-border-dark);
+
+    --highlight-line-bg: var(--highlight-line-bg-dark);
+    --highlight-line-border: var(--highlight-line-border-dark);
+    --highlight-line-text: var(--highlight-line-text-dark);
+
+    --danger-bg: var(--danger-bg-dark);
+    --danger-text: var(--danger-text-dark);
+    --danger-border: var(--danger-border-dark);
+  }
+
+  &:has(> head > meta[name="color-scheme"][content="light"]) {
+    --bg-page: var(--bg-page-light);
+    --bg-surface: var(--bg-surface-light);
+    --bg-elevated: var(--bg-elevated-light);
+    --bg-subtle: var(--bg-subtle-light);
+    --bg-code: var(--bg-code-light);
+    --bg-canvas: var(--bg-canvas-light);
+
+    --text-primary: var(--text-primary-light);
+    --text-secondary: var(--text-secondary-light);
+    --text-muted: var(--text-muted-light);
+
+    --border-primary: var(--border-primary-light);
+    --border-strong: var(--border-strong-light);
+    --border-subtle: var(--border-subtle-light);
+
+    --accent-primary: var(--accent-primary-light);
+    --accent-primary-hover: var(--accent-primary-hover-light);
+    --accent-primary-soft: var(--accent-primary-soft-light);
+    --accent-secondary: var(--accent-secondary-light);
+    --accent-secondary-soft: var(--accent-secondary-soft-light);
+
+    --ptr-frente-bg: var(--ptr-frente-bg-light);
+    --ptr-frente-text: var(--ptr-frente-text-light);
+    --ptr-frente-border: var(--ptr-frente-border-light);
+
+    --ptr-tras-bg: var(--ptr-tras-bg-light);
+    --ptr-tras-text: var(--ptr-tras-text-light);
+    --ptr-tras-border: var(--ptr-tras-border-light);
+
+    --ptr-novo-bg: var(--ptr-novo-bg-light);
+    --ptr-novo-text: var(--ptr-novo-text-light);
+    --ptr-novo-border: var(--ptr-novo-border-light);
+
+    --ptr-primeiro-bg: var(--ptr-primeiro-bg-light);
+    --ptr-primeiro-text: var(--ptr-primeiro-text-light);
+    --ptr-primeiro-border: var(--ptr-primeiro-border-light);
+
+    --highlight-line-bg: var(--highlight-line-bg-light);
+    --highlight-line-border: var(--highlight-line-border-light);
+    --highlight-line-text: var(--highlight-line-text-light);
+
+    --danger-bg: var(--danger-bg-light);
+    --danger-text: var(--danger-text-light);
+    --danger-border: var(--danger-border-light);
+  }
+
+  /* Modern automatic adaptation via light-dark() */
+  @supports (color: light-dark(white, black)) {
+    --bg-page: light-dark(var(--bg-page-light), var(--bg-page-dark));
+    --bg-surface: light-dark(var(--bg-surface-light), var(--bg-surface-dark));
+    --bg-elevated: light-dark(var(--bg-elevated-light), var(--bg-elevated-dark));
+    --bg-subtle: light-dark(var(--bg-subtle-light), var(--bg-subtle-dark));
+    --bg-code: light-dark(var(--bg-code-light), var(--bg-code-dark));
+    --bg-canvas: light-dark(var(--bg-canvas-light), var(--bg-canvas-dark));
+
+    --text-primary: light-dark(var(--text-primary-light), var(--text-primary-dark));
+    --text-secondary: light-dark(var(--text-secondary-light), var(--text-secondary-dark));
+    --text-muted: light-dark(var(--text-muted-light), var(--text-muted-dark));
+
+    --border-primary: light-dark(var(--border-primary-light), var(--border-primary-dark));
+    --border-strong: light-dark(var(--border-strong-light), var(--border-strong-dark));
+    --border-subtle: light-dark(var(--border-subtle-light), var(--border-subtle-dark));
+
+    --accent-primary: light-dark(var(--accent-primary-light), var(--accent-primary-dark));
+    --accent-primary-hover: light-dark(var(--accent-primary-hover-light), var(--accent-primary-hover-dark));
+    --accent-primary-soft: light-dark(var(--accent-primary-soft-light), var(--accent-primary-soft-dark));
+    --accent-secondary: light-dark(var(--accent-secondary-light), var(--accent-secondary-dark));
+    --accent-secondary-soft: light-dark(var(--accent-secondary-soft-light), var(--accent-secondary-soft-dark));
+
+    --ptr-frente-bg: light-dark(var(--ptr-frente-bg-light), var(--ptr-frente-bg-dark));
+    --ptr-frente-text: light-dark(var(--ptr-frente-text-light), var(--ptr-frente-text-dark));
+    --ptr-frente-border: light-dark(var(--ptr-frente-border-light), var(--ptr-frente-border-dark));
+
+    --ptr-tras-bg: light-dark(var(--ptr-tras-bg-light), var(--ptr-tras-bg-dark));
+    --ptr-tras-text: light-dark(var(--ptr-tras-text-light), var(--ptr-tras-text-dark));
+    --ptr-tras-border: light-dark(var(--ptr-tras-border-light), var(--ptr-tras-border-dark));
+
+    --ptr-novo-bg: light-dark(var(--ptr-novo-bg-light), var(--ptr-novo-bg-dark));
+    --ptr-novo-text: light-dark(var(--ptr-novo-text-light), var(--ptr-novo-text-dark));
+    --ptr-novo-border: light-dark(var(--ptr-novo-border-light), var(--ptr-novo-border-dark));
+
+    --ptr-primeiro-bg: light-dark(var(--ptr-primeiro-bg-light), var(--ptr-primeiro-bg-dark));
+    --ptr-primeiro-text: light-dark(var(--ptr-primeiro-text-light), var(--ptr-primeiro-text-dark));
+    --ptr-primeiro-border: light-dark(var(--ptr-primeiro-border-light), var(--ptr-primeiro-border-dark));
+
+    --highlight-line-bg: light-dark(var(--highlight-line-bg-light), var(--highlight-line-bg-dark));
+    --highlight-line-border: light-dark(var(--highlight-line-border-light), var(--highlight-line-border-dark));
+    --highlight-line-text: light-dark(var(--highlight-line-text-light), var(--highlight-line-text-dark));
+
+    --danger-bg: light-dark(var(--danger-bg-light), var(--danger-bg-dark));
+    --danger-text: light-dark(var(--danger-text-light), var(--danger-text-dark));
+    --danger-border: light-dark(var(--danger-border-light), var(--danger-border-dark));
+  }
+
+  /* MANDATORY: Apply color-scheme to :root and map <meta name="color-scheme"> overrides */
+  color-scheme: light dark;
+  accent-color: var(--accent-primary);
+
+  &:has(> head > meta[name="color-scheme"][content="dark"]) {
+    color-scheme: dark;
+  }
+
+  &:has(> head > meta[name="color-scheme"][content="light"]) {
+    color-scheme: light;
+  }
+}
+
+body {
+  background-color: var(--bg-page);
+  color: var(--text-primary);
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  margin: 0;
+  -webkit-font-smoothing: antialiased;
+}
+
+.font-serif-library {
+  font-family: "Georgia", "Cambria", "Charter", "Times New Roman", Times, serif;
+}
+
+.font-mono-code {
+  font-family: "JetBrains Mono", "Fira Code", "Cascadia Code", Consolas, Monaco, monospace;
+}
+
+/* Subtle dot-grid paper texture for the memory diagram canvas */
+.library-grid-canvas {
+  background-color: var(--bg-canvas);
+  background-image: radial-gradient(var(--border-primary) 1px, transparent 1px);
+  background-size: 20px 20px;
+}

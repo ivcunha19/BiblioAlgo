@@ -1,17 +1,52 @@
 import React from 'react';
 
+function getPointerStyles(nome) {
+  if (nome === 'frente') {
+    return {
+      backgroundColor: 'var(--ptr-frente-bg)',
+      color: 'var(--ptr-frente-text)',
+      borderColor: 'var(--ptr-frente-border)',
+    };
+  }
+  if (nome === 'tras') {
+    return {
+      backgroundColor: 'var(--ptr-tras-bg)',
+      color: 'var(--ptr-tras-text)',
+      borderColor: 'var(--ptr-tras-border)',
+    };
+  }
+  if (nome === 'novaCelula') {
+    return {
+      backgroundColor: 'var(--ptr-novo-bg)',
+      color: 'var(--ptr-novo-text)',
+      borderColor: 'var(--ptr-novo-border)',
+    };
+  }
+  return {
+    backgroundColor: 'var(--ptr-primeiro-bg)',
+    color: 'var(--ptr-primeiro-text)',
+    borderColor: 'var(--ptr-primeiro-border)',
+  };
+}
+
 export default function QueueVisualizer({ step }) {
   if (!step || !step.nodes) {
     return (
-      <div className="flex items-center justify-center h-full text-slate-500 font-mono text-sm">
-        Nenhum estado disponível
+      <div
+        className="flex items-center justify-center h-full rounded-xl font-mono-code text-sm p-6"
+        style={{
+          backgroundColor: 'var(--bg-surface)',
+          border: '1px solid var(--border-primary)',
+          color: 'var(--text-muted)',
+        }}
+      >
+        Nenhum estado disponível na memória.
       </div>
     );
   }
 
   const { nodes = [], pointers = [] } = step;
 
-  // Group pointers by targetNodeId
   const pointersByNode = {};
   pointers.forEach((ptr) => {
     if (!pointersByNode[ptr.targetNodeId]) {
@@ -20,214 +55,330 @@ export default function QueueVisualizer({ step }) {
     pointersByNode[ptr.targetNodeId].push(ptr);
   });
 
+  const frentePtr = pointers.find((p) => p.nome === 'frente');
+  const trasPtr = pointers.find((p) => p.nome === 'tras');
+  const isFrenteEqualTras =
+    frentePtr && trasPtr && frentePtr.targetNodeId === trasPtr.targetNodeId;
+  const activeItemsCount = Math.max(
+    0,
+    nodes.filter((n) => !n.sentinela && !n.removido && !n.novo).length
+  );
+
   return (
-    <div className="flex flex-col h-full bg-slate-950/60 border border-slate-800 rounded-2xl p-4 sm:p-6 shadow-xl relative overflow-hidden">
-      {/* Visual Header / Subtitle */}
-      <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
+    <section
+      aria-label="Diagrama da Estrutura na Memória"
+      className="flex flex-col h-full rounded-xl p-4 sm:p-5 overflow-hidden"
+      style={{
+        backgroundColor: 'var(--bg-surface)',
+        border: '1px solid var(--border-primary)',
+        boxShadow: '0 1px 3px rgba(0, 0, 0, 0.04)',
+      }}
+    >
+      {/* Diagram Header */}
+      <div
+        className="flex flex-wrap items-start justify-between gap-3 pb-3 mb-4"
+        style={{ borderBottom: '1px solid var(--border-subtle)' }}
+      >
         <div>
-          <h2 className="text-lg font-bold text-white flex items-center gap-2">
-            <span>Estrutura na Memória (Heap)</span>
-            <span className="text-xs font-normal text-slate-400 bg-slate-800/80 px-2.5 py-0.5 rounded-full border border-slate-700">
-              {nodes.length} {nodes.length === 1 ? 'célula' : 'células'}
+          <div className="flex flex-wrap items-center gap-2">
+            <span
+              className="text-[11px] font-mono-code uppercase tracking-wider px-2 py-0.5 rounded"
+              style={{
+                backgroundColor: 'var(--bg-elevated)',
+                color: 'var(--text-secondary)',
+                border: '1px solid var(--border-primary)',
+              }}
+            >
+              Figura 1.1
             </span>
-          </h2>
-          <p className="text-xs text-slate-400">
-            Encadeamento simples com nó Sentinela explícito
+            <h2
+              className="text-base sm:text-lg font-bold font-serif-library"
+              style={{ color: 'var(--text-primary)' }}
+            >
+              Representação na Memória (Heap)
+            </h2>
+          </div>
+          <p className="text-xs mt-1" style={{ color: 'var(--text-secondary)' }}>
+            {isFrenteEqualTras ? (
+              <span>
+                Invariante atual: <code className="font-mono-code font-semibold">frente == tras</code>{' '}
+                (Fila logicamente vazia — apenas nó sentinela)
+              </span>
+            ) : (
+              <span>
+                Fila com <strong>{activeItemsCount}</strong>{' '}
+                {activeItemsCount === 1 ? 'elemento útil' : 'elementos úteis'} após a célula sentinela
+              </span>
+            )}
           </p>
         </div>
 
-        {/* Legend */}
-        <div className="flex flex-wrap items-center gap-2 text-xs">
-          <span className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-blue-950/60 text-blue-300 border border-blue-800/80 font-medium">
-            <span className="w-2 h-2 rounded-full bg-blue-400"></span> frente
+        {/* Clean Textbook Legend */}
+        <div className="flex flex-wrap items-center gap-1.5 text-xs font-mono-code">
+          <span
+            className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded border font-medium"
+            style={getPointerStyles('frente')}
+          >
+            <span>↓</span> frente
           </span>
-          <span className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-emerald-950/60 text-emerald-300 border border-emerald-800/80 font-medium">
-            <span className="w-2 h-2 rounded-full bg-emerald-400"></span> tras
+          <span
+            className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded border font-medium"
+            style={getPointerStyles('tras')}
+          >
+            <span>↓</span> tras
           </span>
           {pointers.some((p) => p.nome === 'novaCelula') && (
-            <span className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-amber-950/60 text-amber-300 border border-amber-800/80 font-medium animate-pulse">
-              <span className="w-2 h-2 rounded-full bg-amber-400"></span> novaCelula
+            <span
+              className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded border font-medium"
+              style={getPointerStyles('novaCelula')}
+            >
+              <span>↓</span> novaCelula
             </span>
           )}
           {pointers.some((p) => p.nome === 'primeiro') && (
-            <span className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-purple-950/60 text-purple-300 border border-purple-800/80 font-medium animate-pulse">
-              <span className="w-2 h-2 rounded-full bg-purple-400"></span> primeiro
+            <span
+              className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded border font-medium"
+              style={getPointerStyles('primeiro')}
+            >
+              <span>↓</span> primeiro
             </span>
           )}
         </div>
       </div>
 
-      {/* Nodes Canvas Area */}
-      <div className="flex-1 overflow-x-auto overflow-y-auto flex items-center min-h-[260px] p-4 bg-slate-900/50 rounded-xl border border-slate-800/60 relative">
-        <div className="flex items-center gap-3 sm:gap-4 mx-auto py-8">
+      {/* Memory Diagram Canvas */}
+      <div
+        className="flex-1 overflow-x-auto overflow-y-auto flex items-center min-h-[260px] p-4 sm:p-6 rounded-lg library-grid-canvas"
+        style={{ border: '1px solid var(--border-primary)' }}
+      >
+        <div className="flex items-center gap-2 sm:gap-3 mx-auto py-4">
           {nodes.map((node, index) => {
             const nodePointers = pointersByNode[node.id] || [];
             const isSentinela = node.sentinela;
             const isNovo = node.novo;
             const isRemovido = node.removido;
 
+            let cardBorderColor = 'var(--border-strong)';
+            let headerBg = 'var(--bg-elevated)';
+            let headerText = 'var(--text-primary)';
+
+            if (isSentinela) {
+              cardBorderColor = 'var(--accent-secondary)';
+              headerBg = 'var(--accent-secondary-soft)';
+              headerText = 'var(--accent-secondary)';
+            } else if (isNovo) {
+              cardBorderColor = 'var(--ptr-novo-border)';
+              headerBg = 'var(--ptr-novo-bg)';
+              headerText = 'var(--ptr-novo-text)';
+            } else if (isRemovido) {
+              cardBorderColor = 'var(--danger-border)';
+              headerBg = 'var(--danger-bg)';
+              headerText = 'var(--danger-text)';
+            }
+
             return (
               <React.Fragment key={node.id}>
-                {/* Node Column */}
-                <div className="flex flex-col items-center relative group">
-                  {/* Top Pointers Container */}
-                  <div className="min-h-[48px] flex flex-col items-center justify-end gap-1 mb-2">
+                <div className="flex flex-col items-center relative">
+                  {/* Pointers pointing to this cell */}
+                  <div className="min-h-[54px] flex flex-col items-center justify-end gap-1 mb-2">
                     {nodePointers.map((ptr) => (
                       <div
                         key={ptr.nome}
-                        className="px-2.5 py-0.5 text-xs font-bold rounded-full shadow-md flex items-center gap-1 transition-all duration-300 animate-bounce"
-                        style={{
-                          backgroundColor:
-                            ptr.nome === 'frente'
-                              ? '#1e3a8a'
-                              : ptr.nome === 'tras'
-                              ? '#064e3b'
-                              : ptr.nome === 'novaCelula'
-                              ? '#78350f'
-                              : '#581c87',
-                          color:
-                            ptr.nome === 'frente'
-                              ? '#93c5fd'
-                              : ptr.nome === 'tras'
-                              ? '#6ee7b7'
-                              : ptr.nome === 'novaCelula'
-                              ? '#fde68a'
-                              : '#e9d5ff',
-                          borderColor: ptr.cor || '#ffffff',
-                          borderWidth: '1px',
-                        }}
+                        className="px-2.5 py-0.5 text-xs font-mono-code font-bold rounded border flex items-center gap-1 transition-all duration-200"
+                        style={getPointerStyles(ptr.nome)}
                       >
-                        <span>↓</span>
+                        <span aria-hidden="true">↓</span>
                         <span>{ptr.nome}</span>
                       </div>
                     ))}
                   </div>
 
-                  {/* Cell Box */}
+                  {/* Memory Cell Box: [ item | proximo ] */}
                   <div
-                    className={`w-36 rounded-xl border-2 transition-all duration-300 shadow-lg overflow-hidden flex flex-col ${
-                      isRemovido
-                        ? 'border-dashed border-red-500 bg-red-950/20 opacity-75 ring-2 ring-red-500/30'
-                        : isNovo
-                        ? 'border-amber-400 bg-amber-950/20 ring-4 ring-amber-400/20 scale-105'
-                        : isSentinela
-                        ? 'border-indigo-500/80 bg-indigo-950/20'
-                        : 'border-cyan-500/80 bg-slate-800/80'
-                    }`}
+                    className="w-36 sm:w-40 rounded-lg overflow-hidden flex flex-col transition-all duration-200"
+                    style={{
+                      backgroundColor: 'var(--bg-surface)',
+                      borderWidth: '2px',
+                      borderStyle: isRemovido ? 'dashed' : 'solid',
+                      borderColor: cardBorderColor,
+                      opacity: isRemovido ? 0.78 : 1,
+                      boxShadow: '0 2px 6px rgba(0, 0, 0, 0.06)',
+                    }}
                   >
-                    {/* Node Header / Type Tag */}
+                    {/* Cell Title Bar */}
                     <div
-                      className={`px-2 py-1 text-[11px] font-mono font-semibold flex items-center justify-between border-b ${
-                        isSentinela
-                          ? 'bg-indigo-900/60 border-indigo-700/60 text-indigo-200'
-                          : isNovo
-                          ? 'bg-amber-900/60 border-amber-700/60 text-amber-200'
-                          : isRemovido
-                          ? 'bg-red-900/60 border-red-700/60 text-red-200'
-                          : 'bg-slate-700/60 border-slate-600/60 text-slate-300'
-                      }`}
+                      className="px-2.5 py-1 text-[11px] font-mono-code font-semibold flex items-center justify-between"
+                      style={{
+                        backgroundColor: headerBg,
+                        color: headerText,
+                        borderBottom: `1px solid ${cardBorderColor}`,
+                      }}
                     >
                       <span>
                         {isSentinela
                           ? '⚓ Sentinela'
                           : isNovo
-                          ? '✨ novaCelula'
+                          ? '✨ Nova Célula'
                           : isRemovido
                           ? '🗑️ Removida'
                           : `Célula [${index}]`}
                       </span>
-                      <span className="text-[9px] opacity-70">
-                        #{node.id}
-                      </span>
+                      <span className="text-[10px] opacity-80">#{node.id}</span>
                     </div>
 
-                    {/* Cell Compartments: [ item | proximo ] */}
-                    <div className="grid grid-cols-2 text-center divide-x divide-slate-700 bg-slate-950/40">
-                      {/* Item compartment */}
-                      <div className="p-3 flex flex-col items-center justify-center">
-                        <span className="text-[10px] text-slate-500 uppercase font-mono tracking-wider">
+                    {/* Two Compartments: item | proximo */}
+                    <div
+                      className="grid grid-cols-2 text-center"
+                      style={{ backgroundColor: 'var(--bg-surface)' }}
+                    >
+                      {/* Item Field */}
+                      <div
+                        className="p-2.5 flex flex-col items-center justify-center"
+                        style={{ borderRight: '1px solid var(--border-primary)' }}
+                      >
+                        <span
+                          className="text-[10px] uppercase font-mono-code tracking-wider"
+                          style={{ color: 'var(--text-muted)' }}
+                        >
                           item
                         </span>
                         <span
-                          className={`font-mono text-base font-bold mt-0.5 ${
-                            isSentinela
-                              ? 'text-slate-500 italic'
-                              : 'text-cyan-300'
+                          className={`font-mono-code text-sm sm:text-base font-bold mt-0.5 ${
+                            isSentinela ? 'italic font-normal' : ''
                           }`}
+                          style={{
+                            color: isSentinela
+                              ? 'var(--text-muted)'
+                              : 'var(--text-primary)',
+                          }}
                         >
                           {isSentinela ? 'null' : String(node.valor)}
                         </span>
                       </div>
 
-                      {/* Next Pointer compartment */}
-                      <div className="p-3 flex flex-col items-center justify-center">
-                        <span className="text-[10px] text-slate-500 uppercase font-mono tracking-wider">
+                      {/* Proximo Field */}
+                      <div className="p-2.5 flex flex-col items-center justify-center">
+                        <span
+                          className="text-[10px] uppercase font-mono-code tracking-wider"
+                          style={{ color: 'var(--text-muted)' }}
+                        >
                           proximo
                         </span>
-                        <span className="font-mono text-xs font-semibold text-slate-300 mt-0.5 flex items-center gap-1">
+                        <span className="font-mono-code text-xs font-semibold mt-0.5 flex items-center gap-1">
                           {node.proximoId ? (
                             <>
-                              <span className="text-cyan-400">●</span>
-                              <span className="text-[10px] text-slate-400">
+                              <span style={{ color: 'var(--accent-secondary)' }}>●</span>
+                              <span style={{ color: 'var(--text-primary)' }}>
                                 #{node.proximoId}
                               </span>
                             </>
                           ) : (
-                            <span className="text-red-400 font-bold">null</span>
+                            <span
+                              className="font-bold"
+                              style={{ color: 'var(--accent-primary)' }}
+                            >
+                              null
+                            </span>
                           )}
                         </span>
                       </div>
                     </div>
                   </div>
 
-                  {/* Bottom info: role description */}
-                  <div className="mt-2 text-[11px] font-mono text-slate-400 text-center">
-                    {isSentinela && (
-                      <span className="text-indigo-400/90 font-medium">
-                        (cabeça da fila)
-                      </span>
-                    )}
+                  {/* Role Caption Below Cell */}
+                  <div
+                    className="mt-2 min-h-[18px] text-[11px] font-mono-code text-center"
+                    style={{ color: 'var(--text-secondary)' }}
+                  >
+                    {isSentinela && <span>(cabeça fixa)</span>}
                     {isNovo && (
-                      <span className="text-amber-400 font-medium">
-                        (recém-alocado)
+                      <span style={{ color: 'var(--ptr-novo-text)' }}>
+                        (recém-alocada)
                       </span>
                     )}
                     {isRemovido && (
-                      <span className="text-red-400 font-medium">
-                        (desvinculado)
+                      <span style={{ color: 'var(--danger-text)' }}>
+                        (desvinculada)
                       </span>
+                    )}
+                    {!isSentinela && !isNovo && !isRemovido && index === 1 && (
+                      <span>(1º da fila)</span>
                     )}
                   </div>
                 </div>
 
-                {/* Arrow to Next Node or End of list */}
+                {/* Pointer Arrow Between Cells */}
                 {index < nodes.length - 1 && (
-                  <div className="flex items-center px-1 text-slate-500 font-mono text-sm self-center">
-                    <div className="flex flex-col items-center">
-                      <div className="w-8 sm:w-12 h-0.5 bg-gradient-to-r from-cyan-500 to-indigo-500 relative flex items-center justify-end">
-                        <span className="absolute -right-1 text-indigo-400 text-xs">
-                          ▶
+                  <div className="flex items-center px-1 font-mono-code text-xs self-center mt-6">
+                    {node.proximoId ? (
+                      <div className="flex flex-col items-center">
+                        <div
+                          className="w-7 sm:w-10 h-0.5 relative flex items-center justify-end"
+                          style={{ backgroundColor: 'var(--text-secondary)' }}
+                        >
+                          <span
+                            className="absolute -right-1 text-xs"
+                            style={{ color: 'var(--text-secondary)' }}
+                          >
+                            ▶
+                          </span>
+                        </div>
+                        <span
+                          className="text-[10px] mt-1"
+                          style={{ color: 'var(--text-muted)' }}
+                        >
+                          #{node.proximoId}
                         </span>
                       </div>
-                      <span className="text-[9px] text-slate-500 mt-1">prox</span>
-                    </div>
+                    ) : (
+                      <div
+                        className="flex flex-col items-center px-1"
+                        title="Sem vínculo de ponteiro (proximo = null)"
+                      >
+                        <span
+                          className="text-xs font-bold"
+                          style={{ color: 'var(--text-muted)' }}
+                        >
+                          ⨯
+                        </span>
+                        <span
+                          className="text-[9px]"
+                          style={{ color: 'var(--text-muted)' }}
+                        >
+                          isolado
+                        </span>
+                      </div>
+                    )}
                   </div>
                 )}
               </React.Fragment>
             );
           })}
 
-          {/* Null Pointer Terminator for the last node */}
+          {/* Explicit Ground / Null Terminator at the end of the chain */}
           {nodes.length > 0 && nodes[nodes.length - 1].proximoId === null && (
-            <div className="flex items-center pl-1 text-slate-500 font-mono text-xs self-center">
-              <div className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-slate-400">
-                <span className="text-red-400 font-bold">⏚</span>
+            <div className="flex items-center pl-1 font-mono-code text-xs self-center mt-6">
+              <div
+                className="flex items-center gap-1.5 px-2.5 py-1 rounded-md"
+                style={{
+                  backgroundColor: 'var(--bg-surface)',
+                  border: '1px solid var(--border-primary)',
+                  color: 'var(--text-secondary)',
+                }}
+                title="Fim do encadeamento (ponteiro nulo)"
+              >
+                <span
+                  className="font-bold"
+                  style={{ color: 'var(--accent-primary)' }}
+                >
+                  ⏚
+                </span>
                 <span>null</span>
               </div>
             </div>
           )}
         </div>
       </div>
-    </div>
+    </section>
   );
 }

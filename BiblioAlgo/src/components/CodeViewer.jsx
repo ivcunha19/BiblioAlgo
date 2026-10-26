@@ -6,13 +6,12 @@ export default function CodeViewer({ currentLineNumber, activeMethod }) {
   const activeLineRef = useRef(null);
   const containerRef = useRef(null);
 
-  // Method line ranges in Fila.java
   const methodRanges = {
     construtor: { start: 10, end: 14, name: 'Fila() [Construtor]' },
     vazia: { start: 16, end: 19, name: 'vazia()' },
     enfileirar: { start: 21, end: 27, name: 'enfileirar(E item)' },
     desenfileirar: { start: 29, end: 46, name: 'desenfileirar()' },
-    consultarPrimeiro: { start: 48, end: 57, name: 'consultarPrimeiro()' },
+    consultarPrimeiro: { start: 48, end: 56, name: 'consultarPrimeiro()' },
   };
 
   const currentRange = methodRanges[activeMethod] || null;
@@ -27,18 +26,49 @@ export default function CodeViewer({ currentLineNumber, activeMethod }) {
   }, [currentLineNumber]);
 
   return (
-    <div className="flex flex-col h-full bg-slate-900 border border-slate-800 rounded-2xl shadow-xl overflow-hidden">
-      {/* Header */}
-      <div className="flex items-center justify-between px-4 py-3 bg-slate-950/80 border-b border-slate-800/80 backdrop-blur">
-        <div className="flex items-center gap-2">
-          <span className="w-3 h-3 rounded-full bg-red-500/80 inline-block"></span>
-          <span className="w-3 h-3 rounded-full bg-amber-500/80 inline-block"></span>
-          <span className="w-3 h-3 rounded-full bg-emerald-500/80 inline-block"></span>
-          <span className="ml-2 font-mono text-xs font-semibold text-slate-400">
+    <section
+      aria-label="Código-Fonte Java (Fila.java)"
+      className="flex flex-col h-full rounded-xl overflow-hidden"
+      style={{
+        backgroundColor: 'var(--bg-surface)',
+        border: '1px solid var(--border-primary)',
+        boxShadow: '0 1px 3px rgba(0, 0, 0, 0.04)',
+      }}
+    >
+      {/* Textbook Code Listing Header */}
+      <div
+        className="flex flex-wrap items-center justify-between gap-2 px-4 py-3"
+        style={{
+          backgroundColor: 'var(--bg-elevated)',
+          borderBottom: '1px solid var(--border-primary)',
+        }}
+      >
+        <div className="flex flex-wrap items-center gap-2">
+          <span
+            className="text-[11px] font-mono-code uppercase tracking-wider px-2 py-0.5 rounded"
+            style={{
+              backgroundColor: 'var(--bg-surface)',
+              color: 'var(--text-secondary)',
+              border: '1px solid var(--border-primary)',
+            }}
+          >
+            Listagem 1.1
+          </span>
+          <span
+            className="font-mono-code text-xs sm:text-sm font-bold"
+            style={{ color: 'var(--text-primary)' }}
+          >
             Fila.java
           </span>
           {activeMethod && (
-            <span className="ml-2 text-xs font-medium px-2 py-0.5 rounded-full bg-indigo-950 text-indigo-300 border border-indigo-800">
+            <span
+              className="text-xs font-mono-code font-medium px-2 py-0.5 rounded"
+              style={{
+                backgroundColor: 'var(--accent-secondary-soft)',
+                color: 'var(--accent-secondary)',
+                border: '1px solid var(--border-primary)',
+              }}
+            >
               {methodRanges[activeMethod]?.name || activeMethod}
             </span>
           )}
@@ -46,59 +76,85 @@ export default function CodeViewer({ currentLineNumber, activeMethod }) {
 
         {currentRange && (
           <button
+            type="button"
             onClick={() => setFocusMethodOnly(!focusMethodOnly)}
-            className="text-xs text-slate-400 hover:text-white px-2.5 py-1 rounded-lg bg-slate-800/60 hover:bg-slate-800 border border-slate-700/60 transition"
+            className="text-xs font-medium px-2.5 py-1 rounded-md transition cursor-pointer"
+            style={{
+              backgroundColor: 'var(--bg-surface)',
+              color: 'var(--text-primary)',
+              border: '1px solid var(--border-primary)',
+            }}
           >
-            {focusMethodOnly ? 'Ver classe inteira' : 'Focar método'}
+            {focusMethodOnly ? 'Ver classe completa' : 'Isolar método atual'}
           </button>
         )}
       </div>
 
-      {/* Code body */}
+      {/* Code Lines */}
       <div
         ref={containerRef}
-        className="flex-1 overflow-auto p-3 font-mono text-xs sm:text-sm leading-relaxed"
+        className="flex-1 overflow-auto p-3 font-mono-code text-xs sm:text-[13px] leading-relaxed"
+        style={{ backgroundColor: 'var(--bg-code)' }}
       >
         {QUEUE_JAVA_CODE.map((line, index) => {
           const lineNumber = index + 1;
           const isActive = lineNumber === currentLineNumber;
+          const isInActiveMethod =
+            currentRange &&
+            lineNumber >= currentRange.start &&
+            lineNumber <= currentRange.end;
 
-          // If focusMethodOnly is true and line is outside current method range, skip
-          if (focusMethodOnly && currentRange) {
-            if (lineNumber < currentRange.start || lineNumber > currentRange.end) {
-              return null;
-            }
+          if (focusMethodOnly && currentRange && !isInActiveMethod) {
+            return null;
           }
 
           return (
             <div
               key={lineNumber}
               ref={isActive ? activeLineRef : null}
-              className={`flex items-start transition-colors duration-150 rounded px-1.5 py-0.5 ${
-                isActive
-                  ? 'bg-amber-500/20 text-amber-200 border-l-4 border-amber-400 font-semibold shadow-sm'
-                  : 'text-slate-300 hover:bg-slate-800/40'
-              }`}
+              className="flex items-start rounded px-1.5 py-0.5 transition-colors duration-150"
+              style={{
+                backgroundColor: isActive
+                  ? 'var(--highlight-line-bg)'
+                  : 'transparent',
+                color: isActive
+                  ? 'var(--highlight-line-text)'
+                  : isInActiveMethod || !currentRange
+                  ? 'var(--text-primary)'
+                  : 'var(--text-muted)',
+                borderLeft: isActive
+                  ? '3px solid var(--highlight-line-border)'
+                  : '3px solid transparent',
+                fontWeight: isActive ? 600 : 400,
+              }}
             >
               <span
-                className={`select-none text-right w-8 pr-3 shrink-0 font-mono text-xs ${
-                  isActive ? 'text-amber-400 font-bold' : 'text-slate-600'
-                }`}
+                className="select-none text-right w-7 pr-2.5 shrink-0 font-mono-code text-[11px]"
+                style={{
+                  color: isActive
+                    ? 'var(--highlight-line-text)'
+                    : 'var(--text-muted)',
+                  fontWeight: isActive ? 700 : 400,
+                }}
               >
                 {lineNumber}
               </span>
 
-              <span className="w-4 shrink-0 text-amber-400 font-bold">
+              <span
+                className="w-4 shrink-0 font-bold select-none"
+                style={{ color: 'var(--accent-primary)' }}
+                aria-hidden="true"
+              >
                 {isActive ? '▶' : ''}
               </span>
 
               <span className="whitespace-pre overflow-x-auto">
-                {line || ' '}
+                {line ? line.replace(/\t/g, '  ') : ' '}
               </span>
             </div>
           );
         })}
       </div>
-    </div>
+    </section>
   );
 }

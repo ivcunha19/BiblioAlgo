@@ -3,6 +3,7 @@ import CodeViewer from './components/CodeViewer';
 import QueueVisualizer from './components/QueueVisualizer';
 import ControlsBar from './components/ControlsBar';
 import StepExplanation from './components/StepExplanation';
+import ThemeToggle from './components/ThemeToggle';
 import { useQueueSimulation } from './hooks/useQueueSimulation';
 
 export default function App() {
@@ -24,52 +25,93 @@ export default function App() {
     prevStep,
     firstStep,
     lastStep,
+    goToStep,
     togglePlay,
     setPlaybackSpeed,
   } = useQueueSimulation();
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans selection:bg-indigo-500 selection:text-white">
-      {/* Top Navbar */}
-      <header className="border-b border-slate-800 bg-slate-900/60 backdrop-blur sticky top-0 z-20">
+    <div
+      className="min-h-screen flex flex-col transition-colors duration-200"
+      style={{
+        backgroundColor: 'var(--bg-page)',
+        color: 'var(--text-primary)',
+      }}
+    >
+      {/* Library Catalog Header */}
+      <header
+        className="sticky top-0 z-20"
+        style={{
+          backgroundColor: 'var(--bg-surface)',
+          borderBottom: '1px solid var(--border-primary)',
+        }}
+      >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex flex-wrap items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 to-cyan-400 flex items-center justify-center font-black text-xl shadow-lg shadow-indigo-500/20 text-white">
-              BA
+            <div
+              className="w-10 h-10 rounded-lg flex items-center justify-center font-serif-library font-bold text-lg shrink-0"
+              style={{
+                backgroundColor: 'var(--accent-primary-soft)',
+                color: 'var(--accent-primary)',
+                border: '1px solid var(--border-strong)',
+              }}
+              aria-hidden="true"
+            >
+              📖
             </div>
             <div>
-              <h1 className="text-xl font-bold tracking-tight text-white flex items-center gap-2">
-                BiblioAlgo
-                <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-cyan-950 text-cyan-300 border border-cyan-800">
-                  Fila Encadeada
+              <div className="flex flex-wrap items-center gap-2">
+                <h1 className="text-lg sm:text-xl font-bold font-serif-library tracking-tight">
+                  BiblioAlgo
+                </h1>
+                <span
+                  className="text-xs font-mono-code px-2 py-0.5 rounded"
+                  style={{
+                    backgroundColor: 'var(--bg-elevated)',
+                    color: 'var(--text-secondary)',
+                    border: '1px solid var(--border-primary)',
+                  }}
+                >
+                  Acervo AED • Fila Encadeada
                 </span>
-              </h1>
-              <p className="text-xs text-slate-400">
-                Visualização interativa da execução linha a linha (Código da Professora)
+              </div>
+              <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>
+                Caderno interativo de algoritmos: execute operações e acompanhe o efeito de cada linha na memória
               </p>
             </div>
           </div>
 
-          {/* Status badge */}
-          <div className="flex items-center gap-3 text-xs">
-            {errorStatus ? (
-              <span className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-950/80 text-amber-300 border border-amber-800">
-                <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
-                Backend offline (Modo Demonstração)
+          {/* Right Controls: Theme Toggle + Execution Mode Badge */}
+          <div className="flex flex-wrap items-center gap-3">
+            <div
+              className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-mono-code"
+              style={{
+                backgroundColor: 'var(--bg-elevated)',
+                color: 'var(--text-secondary)',
+                border: '1px solid var(--border-primary)',
+              }}
+            >
+              <span
+                className="w-2 h-2 rounded-full"
+                style={{
+                  backgroundColor: errorStatus
+                    ? 'var(--ptr-novo-border)'
+                    : 'var(--ptr-tras-border)',
+                }}
+              />
+              <span>
+                {errorStatus ? 'Simulador Integrado' : 'Servidor Java (:8080)'}
               </span>
-            ) : (
-              <span className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-950/80 text-emerald-300 border border-emerald-800">
-                <span className="w-2 h-2 rounded-full bg-emerald-400"></span>
-                Backend Conectado (:8080)
-              </span>
-            )}
+            </div>
+
+            <ThemeToggle />
           </div>
         </div>
       </header>
 
-      {/* Main Container */}
-      <main className="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 flex flex-col gap-6">
-        {/* Controls Bar (Operations + Stepper) */}
+      {/* Main Study Area */}
+      <main className="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 flex flex-col gap-5">
+        {/* Workbench Controls (Operations + Stepper) */}
         <ControlsBar
           onEnqueue={enqueue}
           onDequeue={dequeue}
@@ -82,28 +124,32 @@ export default function App() {
           onNextStep={nextStep}
           onFirstStep={firstStep}
           onLastStep={lastStep}
+          onGoToStep={goToStep}
           isPlaying={isPlaying}
           onTogglePlay={togglePlay}
           playbackSpeed={playbackSpeed}
           onChangeSpeed={setPlaybackSpeed}
           isLoading={isLoading}
+          activeMethod={activeMethod}
         />
 
-        {/* Workspace: 2-column layout */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
-          {/* Left Column: Visualizer + Explanation (7 cols) */}
-          <div className="lg:col-span-7 flex flex-col gap-5 min-h-[500px]">
-            {/* Step Explanation Banner */}
-            <StepExplanation step={currentStep} />
+        {/* Open-Book Two-Column Study Layout */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-stretch">
+          {/* Left Page: Current Step Note + Memory Diagram (7 cols) */}
+          <div className="lg:col-span-7 flex flex-col gap-5 min-h-[480px]">
+            <StepExplanation
+              step={currentStep}
+              stepIndex={currentStepIndex}
+              totalSteps={steps.length}
+            />
 
-            {/* Visualizer Area */}
-            <div className="flex-1 min-h-[360px]">
+            <div className="flex-1 min-h-[340px]">
               <QueueVisualizer step={currentStep} />
             </div>
           </div>
 
-          {/* Right Column: Java Code Panel (5 cols) */}
-          <div className="lg:col-span-5 h-[500px] lg:h-auto min-h-[500px]">
+          {/* Right Page: Source Code Listing (5 cols) */}
+          <div className="lg:col-span-5 h-[500px] lg:h-auto min-h-[480px]">
             <CodeViewer
               currentLineNumber={currentStep?.lineNumber || 0}
               activeMethod={activeMethod}
@@ -111,40 +157,125 @@ export default function App() {
           </div>
         </div>
 
-        {/* Explanatory Cards */}
-        <section className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-4 border-t border-slate-900 text-xs">
-          <div className="p-4 rounded-xl bg-slate-900/40 border border-slate-800/80">
-            <h3 className="font-bold text-slate-200 mb-1 flex items-center gap-1.5">
-              <span>⚓</span> Nó Sentinela (Cabeça)
-            </h3>
-            <p className="text-slate-400 leading-relaxed">
-              A célula sentinela existe permanentemente no início da fila com <code className="text-slate-300">item = null</code>. Ela simplifica inserções e remoções eliminando verificações de ponteiro nulo para <code className="text-slate-300">frente</code>.
-            </p>
+        {/* Library Reference Index Cards (Fichário Conceitual) */}
+        <section
+          aria-label="Fichas de Referência Conceitual"
+          className="pt-4"
+          style={{ borderTop: '1px solid var(--border-primary)' }}
+        >
+          <div className="flex items-center gap-2 mb-3">
+            <span
+              className="text-xs font-mono-code uppercase tracking-wider font-semibold"
+              style={{ color: 'var(--text-muted)' }}
+            >
+              Fichário de Revisão Rápida
+            </span>
           </div>
 
-          <div className="p-4 rounded-xl bg-slate-900/40 border border-slate-800/80">
-            <h3 className="font-bold text-slate-200 mb-1 flex items-center gap-1.5">
-              <span>🔵</span> Ponteiros Frente e Trás
-            </h3>
-            <p className="text-slate-400 leading-relaxed">
-              <strong className="text-blue-400">frente</strong> sempre aponta para a sentinela. <strong className="text-emerald-400">tras</strong> aponta para a última célula inserida. Se <code className="text-slate-300">frente == tras</code>, a fila está vazia.
-            </p>
-          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+            <article
+              className="p-4 rounded-xl"
+              style={{
+                backgroundColor: 'var(--bg-surface)',
+                border: '1px solid var(--border-primary)',
+              }}
+            >
+              <div
+                className="font-mono-code text-[11px] uppercase tracking-wider mb-1"
+                style={{ color: 'var(--accent-primary)' }}
+              >
+                Ficha I • Estrutura
+              </div>
+              <h3 className="font-serif-library font-bold text-sm mb-1.5">
+                Célula Sentinela (Cabeça)
+              </h3>
+              <p
+                className="leading-relaxed"
+                style={{ color: 'var(--text-secondary)' }}
+              >
+                Permanece fixa no início da fila com{' '}
+                <code className="font-mono-code font-semibold">item = null</code>.
+                Elimina casos especiais de ponteiro nulo ao inserir o primeiro elemento
+                ou remover elementos iniciais.
+              </p>
+            </article>
 
-          <div className="p-4 rounded-xl bg-slate-900/40 border border-slate-800/80">
-            <h3 className="font-bold text-slate-200 mb-1 flex items-center gap-1.5">
-              <span>⚡</span> Complexidade das Operações
-            </h3>
-            <p className="text-slate-400 leading-relaxed">
-              Graças ao nó sentinela e aos ponteiros diretos de início e fim, todas as operações básicas (<code className="text-indigo-300">enfileirar</code>, <code className="text-indigo-300">desenfileirar</code>, <code className="text-indigo-300">consultarPrimeiro</code>, <code className="text-indigo-300">vazia</code>) rodam em tempo constante <strong>O(1)</strong>.
-            </p>
+            <article
+              className="p-4 rounded-xl"
+              style={{
+                backgroundColor: 'var(--bg-surface)',
+                border: '1px solid var(--border-primary)',
+              }}
+            >
+              <div
+                className="font-mono-code text-[11px] uppercase tracking-wider mb-1"
+                style={{ color: 'var(--accent-primary)' }}
+              >
+                Ficha II • Invariantes
+              </div>
+              <h3 className="font-serif-library font-bold text-sm mb-1.5">
+                Ponteiros Frente e Trás
+              </h3>
+              <p
+                className="leading-relaxed"
+                style={{ color: 'var(--text-secondary)' }}
+              >
+                <strong style={{ color: 'var(--ptr-frente-text)' }}>frente</strong>{' '}
+                referencia a sentinela;{' '}
+                <strong style={{ color: 'var(--ptr-tras-text)' }}>tras</strong>{' '}
+                referencia o último nó. O primeiro item útil está sempre em{' '}
+                <code className="font-mono-code font-semibold">
+                  frente.getProximo()
+                </code>
+                , e a fila está vazia se e somente se{' '}
+                <code className="font-mono-code font-semibold">frente == tras</code>.
+              </p>
+            </article>
+
+            <article
+              className="p-4 rounded-xl"
+              style={{
+                backgroundColor: 'var(--bg-surface)',
+                border: '1px solid var(--border-primary)',
+              }}
+            >
+              <div
+                className="font-mono-code text-[11px] uppercase tracking-wider mb-1"
+                style={{ color: 'var(--accent-primary)' }}
+              >
+                Ficha III • Desempenho
+              </div>
+              <h3 className="font-serif-library font-bold text-sm mb-1.5">
+                Complexidade Constante O(1)
+              </h3>
+              <p
+                className="leading-relaxed"
+                style={{ color: 'var(--text-secondary)' }}
+              >
+                Sem necessidade de percorrer a lista, todas as operações do TAD (
+                <code className="font-mono-code font-semibold">enfileirar</code>,{' '}
+                <code className="font-mono-code font-semibold">desenfileirar</code>,{' '}
+                <code className="font-mono-code font-semibold">
+                  consultarPrimeiro
+                </code>{' '}
+                e <code className="font-mono-code font-semibold">vazia</code>)
+                executam em tempo constante <strong>O(1)</strong>.
+              </p>
+            </article>
           </div>
         </section>
       </main>
 
-      {/* Footer */}
-      <footer className="border-t border-slate-900 py-4 text-center text-xs text-slate-500">
-        BiblioAlgo — Visualizador Didático de Algoritmos e Estruturas de Dados
+      {/* Minimalist Library Footer */}
+      <footer
+        className="py-4 text-center text-xs"
+        style={{
+          borderTop: '1px solid var(--border-primary)',
+          color: 'var(--text-muted)',
+          backgroundColor: 'var(--bg-surface)',
+        }}
+      >
+        BiblioAlgo — Biblioteca Didática de Algoritmos e Estruturas de Dados
       </footer>
     </div>
   );
