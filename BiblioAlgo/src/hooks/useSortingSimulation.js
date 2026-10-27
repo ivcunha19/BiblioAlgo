@@ -807,34 +807,68 @@ function generateQuicksortTrace(initialArray) {
 
   function particao(inicio, fim) {
     partCount++;
-    const pivot = arr[fim];
-    let part = inicio - 1;
+    const meio = Math.floor((inicio + fim) / 2);
+    const chosenPivotVal = arr[meio];
     const iterId = `part-${partCount}`;
-    const iterLabel = `${partCount}ª Partição [${inicio}..${fim}] (pivô = ${pivot})`;
+    const iterLabel = `${partCount}ª Partição [${inicio}..${fim}] (pivô meio[${meio}] = ${chosenPivotVal})`;
 
     steps.push({
       stepIndex: steps.length,
       lineNumber: 28,
+      codeLine: 'int meio = (inicio + fim) / 2;',
+      method: 'particao',
+      iterationId: iterId,
+      iterationLabel: iterLabel,
+      description: `Inicia particao(${inicio}, ${fim}): calcula o índice central meio = (${inicio} + ${fim}) / 2 = ${meio} (valor ${chosenPivotVal}) para ser o pivô.`,
+      array: [...arr],
+      indexPointers: [
+        { name: 'inicio', index: inicio },
+        { name: 'meio', index: meio },
+        { name: 'fim', index: fim },
+      ],
+      comparingIndices: [],
+      swappingIndices: [],
+      sortedIndices: [...sortedSet],
+      activeRange: [inicio, fim],
+      pivotIndex: meio,
+      keyItem: { label: 'pivot (meio)', value: chosenPivotVal },
+      comparacoes,
+      movimentacoes,
+      variables: { inicio, meio, fim, [`dados[${meio}]`]: chosenPivotVal, comparacoes, movimentacoes },
+    });
+
+    movimentacoes++;
+    const tempPivot = arr[meio];
+    arr[meio] = arr[fim];
+    arr[fim] = tempPivot;
+
+    const pivot = arr[fim];
+    let part = inicio - 1;
+
+    steps.push({
+      stepIndex: steps.length,
+      lineNumber: 30,
       codeLine: 'T pivot = dadosOrdenados[fim];',
       method: 'particao',
       iterationId: iterId,
       iterationLabel: iterLabel,
-      description: `Inicia particao(${inicio}, ${fim}): escolhe o último elemento da faixa como pivô (pivot = dadosOrdenados[${fim}] = ${pivot}) e define part = ${part}.`,
+      description: `Executa swap(meio=${meio}, fim=${fim}) movendo o pivô do meio (${pivot}) para o final da partição (dadosOrdenados[${fim}] = ${pivot}) e define part = ${part}.`,
       array: [...arr],
       indexPointers: [
         { name: 'inicio', index: inicio },
+        { name: 'meio', index: meio },
         { name: 'fim', index: fim },
         ...(part >= 0 ? [{ name: 'part', index: part }] : []),
       ],
       comparingIndices: [],
-      swappingIndices: [],
+      swappingIndices: [meio, fim],
       sortedIndices: [...sortedSet],
       activeRange: [inicio, fim],
       pivotIndex: fim,
       keyItem: { label: 'pivot', value: pivot },
       comparacoes,
       movimentacoes,
-      variables: { inicio, fim, pivot, part, comparacoes, movimentacoes },
+      variables: { inicio, meio, fim, pivot, part, comparacoes, movimentacoes },
     });
 
     for (let i = inicio; i < fim; i++) {
@@ -843,7 +877,7 @@ function generateQuicksortTrace(initialArray) {
 
       steps.push({
         stepIndex: steps.length,
-        lineNumber: 31,
+        lineNumber: 33,
         codeLine: 'if (comparador.compare(dadosOrdenados[i], pivot) < 0) {',
         method: 'particao',
         iterationId: iterId,
@@ -880,7 +914,7 @@ function generateQuicksortTrace(initialArray) {
 
         steps.push({
           stepIndex: steps.length,
-          lineNumber: 33,
+          lineNumber: 35,
           codeLine: 'swap(part, i);',
           method: 'swap',
           iterationId: iterId,
@@ -913,7 +947,7 @@ function generateQuicksortTrace(initialArray) {
 
     steps.push({
       stepIndex: steps.length,
-      lineNumber: 37,
+      lineNumber: 39,
       codeLine: 'swap(part, fim);',
       method: 'particao',
       iterationId: iterId,

@@ -186,6 +186,8 @@ export const QUICKSORT_JAVA_CODE = `public class Quicksort<T extends Comparable<
 	}
 
 	private int particao(int inicio, int fim) {
+		int meio = (inicio + fim) / 2;
+		swap(meio, fim);
 		T pivot = dadosOrdenados[fim];
 		int part = inicio - 1;
 		for (int i = inicio; i < fim; i++) {
@@ -449,29 +451,29 @@ export const SORTING_CATALOG = {
     category: 'sorting',
     title: 'Quicksort (Ordenação Rápida)',
     shortName: 'Quicksort',
-    policyTag: 'Particionamento por Pivô',
+    policyTag: 'Particionamento por Pivô no Meio',
     fileName: 'Quicksort.java',
     summary:
-      'Escolhe o último elemento da partição como pivô (pivot = dadosOrdenados[fim]), rearranja os elementos menores à esquerda de "part" e maiores à direita, e ordena recursivamente as subpartições.',
-    primaryPointers: ['inicio', 'fim', 'part', 'i'],
-    invariantText: 'Elementos ≤ pivot à esquerda de part',
+      'Seleciona o elemento central da partição (meio = (inicio + fim) / 2) como pivô movendo-o para o fim com swap(meio, fim), rearranja os elementos menores à esquerda de "part" e maiores à direita, e ordena recursivamente as subpartições.',
+    primaryPointers: ['inicio', 'meio', 'fim', 'part', 'i'],
+    invariantText: 'Elementos < pivot à esquerda de part',
     operationsComplexity: [
       { name: 'Melhor caso / Caso médio', complexity: 'O(n log n)' },
-      { name: 'Pior caso (pivô extremo)', complexity: 'O(n²)' },
+      { name: 'Pior caso (partições desbalanceadas)', complexity: 'O(n²)' },
       { name: 'Memória auxiliar (pilha recursão)', complexity: 'O(log n)' },
     ],
     codeLines: QUICKSORT_JAVA_CODE,
     methodRanges: {
       ordenar: { start: 8, end: 16, name: 'ordenar(T[] dados)' },
       quicksort: { start: 18, end: 25, name: 'quicksort(int esq, int dir)' },
-      particao: { start: 27, end: 39, name: 'particao(int inicio, int fim)' },
-      swap: { start: 41, end: 46, name: 'swap(int i, int j)' },
+      particao: { start: 27, end: 41, name: 'particao(int inicio, int fim)' },
+      swap: { start: 43, end: 48, name: 'swap(int i, int j)' },
     },
     cards: [
       {
         tag: 'Particionamento',
-        title: 'Esquema de Partição (Pivô no Fim)',
-        body: 'No método particao(inicio, fim), pivot recebe dadosOrdenados[fim] e part inicia em inicio - 1. Sempre que dadosOrdenados[i] < pivot, incrementa-se part e troca-se swap(part, i).',
+        title: 'Escolha do Pivô no Meio',
+        body: 'No método particao(inicio, fim), calcula-se meio = (inicio + fim) / 2, troca-se swap(meio, fim) e pivot recebe dadosOrdenados[fim]. Sempre que dadosOrdenados[i] < pivot, incrementa-se part e troca-se swap(part, i).',
       },
       {
         tag: 'Posição Definitiva',
@@ -480,8 +482,8 @@ export const SORTING_CATALOG = {
       },
       {
         tag: 'Complexidade',
-        title: 'O(n log n) Médio vs. O(n²) Pior Caso',
-        body: 'Quando o pivô divide o vetor de forma equilibrada, executa em O(n log n). Porém, se o vetor já estiver ordenado ou invertido (com pivô fixo no fim), a partição fica degenerada e cai para O(n²).',
+        title: 'Vantagem do Pivô Central',
+        body: 'Ao escolher o elemento do meio como pivô, vetores já ordenados ou em ordem inversa deixam de ser o pior caso degenerado, mantendo a divisão equilibrada em O(n log n).',
       },
     ],
   },

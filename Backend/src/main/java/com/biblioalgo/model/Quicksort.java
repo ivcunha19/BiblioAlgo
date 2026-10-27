@@ -63,6 +63,8 @@ public class Quicksort<T extends Comparable<T>> implements IOrdenator<T> {
 					
 	private int particao(int inicio, int fim) {
 			
+		int meio = (inicio + fim) / 2;
+		swap(meio, fim);
 		T pivot = dadosOrdenados[fim];
 		int part = inicio - 1;
 		for (int i = inicio; i < fim; i++) {
