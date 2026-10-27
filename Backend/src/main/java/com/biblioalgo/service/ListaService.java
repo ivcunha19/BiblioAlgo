@@ -22,24 +22,54 @@ public class ListaService {
     public synchronized ExecutionTrace reset() {
         this.lista = new Lista<>();
         List<StepSnapshot> steps = new ArrayList<>();
+        String sentinelaId = lista.getPrimeiro().getId();
 
         steps.add(StepSnapshot.builder()
                 .stepIndex(0)
                 .lineNumber(7)
                 .codeLine("Celula<E> sentinela = new Celula<>();")
                 .method("construtor")
-                .description("Aloca a célula sentinela (cabeça da lista) com item = null e proximo = null.")
+                .description("Aloca a célula sentinela (cabeça da lista) na memória com item = null e proximo = null. A referência local 'sentinela' aponta para ela.")
                 .nodes(captureCurrentNodes(null, null))
-                .pointers(capturePointers("sentinela", lista.getPrimeiro().getId(), null, null))
-                .variables(Map.of("tamanho", 0))
+                .pointers(List.of(
+                        PointerSnapshot.builder()
+                                .nome("sentinela")
+                                .targetNodeId(sentinelaId)
+                                .tipo("local")
+                                .cor("#f59e0b")
+                                .build()
+                ))
+                .variables(Collections.emptyMap())
                 .build());
 
         steps.add(StepSnapshot.builder()
                 .stepIndex(1)
+                .lineNumber(8)
+                .codeLine("this.primeiro = this.ultimo = sentinela;")
+                .method("construtor")
+                .description("As referências 'primeiro' e 'ultimo' recebem o endereço guardado em 'sentinela', passando a apontar para a célula cabeça.")
+                .nodes(captureCurrentNodes(null, null))
+                .pointers(capturePointers("sentinela", sentinelaId, null, null))
+                .variables(Collections.emptyMap())
+                .build());
+
+        steps.add(StepSnapshot.builder()
+                .stepIndex(2)
                 .lineNumber(9)
                 .codeLine("this.tamanho = 0;")
                 .method("construtor")
-                .description("Lista inicializada. 'primeiro' e 'ultimo' apontam para a sentinela e tamanho = 0.")
+                .description("Inicializa o atributo 'tamanho' com 0.")
+                .nodes(captureCurrentNodes(null, null))
+                .pointers(capturePointers("sentinela", sentinelaId, null, null))
+                .variables(Map.of("tamanho", 0))
+                .build());
+
+        steps.add(StepSnapshot.builder()
+                .stepIndex(3)
+                .lineNumber(10)
+                .codeLine("}")
+                .method("construtor")
+                .description("Fim do construtor. A variável local 'sentinela' sai de escopo; 'primeiro' e 'ultimo' permanecem apontando para a célula sentinela (lista vazia: primeiro == ultimo).")
                 .nodes(captureCurrentNodes(null, null))
                 .pointers(capturePointers(null, null, null, null))
                 .variables(Map.of("tamanho", 0))
@@ -54,11 +84,14 @@ public class ListaService {
     }
 
     public synchronized ExecutionTrace getCurrentState() {
+        if (lista.vazia()) {
+            return reset();
+        }
         List<StepSnapshot> steps = new ArrayList<>();
         steps.add(StepSnapshot.builder()
                 .stepIndex(0)
-                .lineNumber(8)
-                .codeLine("this.primeiro = this.ultimo = sentinela;")
+                .lineNumber(10)
+                .codeLine("}")
                 .method("construtor")
                 .description("Estado atual da lista na memória.")
                 .nodes(captureCurrentNodes(null, null))

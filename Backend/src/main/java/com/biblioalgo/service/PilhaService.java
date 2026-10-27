@@ -22,24 +22,67 @@ public class PilhaService {
     public synchronized ExecutionTrace reset() {
         this.pilha = new Pilha<>();
         List<StepSnapshot> steps = new ArrayList<>();
+        String sentinelaId = pilha.getFundo().getId();
 
         steps.add(StepSnapshot.builder()
                 .stepIndex(0)
                 .lineNumber(6)
                 .codeLine("Celula<E> sentinela = new Celula<E>();")
                 .method("construtor")
-                .description("Aloca a célula sentinela (fundo da pilha) na memória com item = null e proximo = null.")
+                .description("Aloca a célula sentinela (base da pilha) na memória com item = null e proximo = null. A referência local 'sentinela' aponta para ela.")
                 .nodes(captureCurrentNodes(null, null))
-                .pointers(capturePointers("sentinela", pilha.getFundo().getId()))
-                .variables(Map.of("sentinela", pilha.getFundo().getId()))
+                .pointers(List.of(
+                        PointerSnapshot.builder()
+                                .nome("sentinela")
+                                .targetNodeId(sentinelaId)
+                                .tipo("local")
+                                .cor("#f59e0b")
+                                .build()
+                ))
+                .variables(Collections.emptyMap())
                 .build());
 
         steps.add(StepSnapshot.builder()
                 .stepIndex(1)
+                .lineNumber(7)
+                .codeLine("fundo = sentinela;")
+                .method("construtor")
+                .description("A referência 'fundo' recebe o endereço guardado em 'sentinela', apontando para a célula base.")
+                .nodes(captureCurrentNodes(null, null))
+                .pointers(List.of(
+                        PointerSnapshot.builder()
+                                .nome("fundo")
+                                .targetNodeId(sentinelaId)
+                                .tipo("atributo")
+                                .cor("#10b981")
+                                .build(),
+                        PointerSnapshot.builder()
+                                .nome("sentinela")
+                                .targetNodeId(sentinelaId)
+                                .tipo("local")
+                                .cor("#f59e0b")
+                                .build()
+                ))
+                .variables(Collections.emptyMap())
+                .build());
+
+        steps.add(StepSnapshot.builder()
+                .stepIndex(2)
                 .lineNumber(8)
                 .codeLine("topo = sentinela;")
                 .method("construtor")
-                .description("Pilha inicializada. Os ponteiros 'topo' e 'fundo' apontam ambos para a célula sentinela (fundo == topo).")
+                .description("A referência 'topo' também recebe o endereço guardado em 'sentinela'. Agora 'topo', 'fundo' e 'sentinela' apontam para a mesma célula.")
+                .nodes(captureCurrentNodes(null, null))
+                .pointers(capturePointers("sentinela", sentinelaId))
+                .variables(Collections.emptyMap())
+                .build());
+
+        steps.add(StepSnapshot.builder()
+                .stepIndex(3)
+                .lineNumber(9)
+                .codeLine("}")
+                .method("construtor")
+                .description("Fim do construtor. A variável local 'sentinela' sai de escopo; 'topo' e 'fundo' permanecem referenciando a célula sentinela (pilha vazia: fundo == topo).")
                 .nodes(captureCurrentNodes(null, null))
                 .pointers(capturePointers(null, null))
                 .variables(Collections.emptyMap())
@@ -54,11 +97,14 @@ public class PilhaService {
     }
 
     public synchronized ExecutionTrace getCurrentState() {
+        if (pilha.vazia()) {
+            return reset();
+        }
         List<StepSnapshot> steps = new ArrayList<>();
         steps.add(StepSnapshot.builder()
                 .stepIndex(0)
-                .lineNumber(8)
-                .codeLine("topo = sentinela;")
+                .lineNumber(9)
+                .codeLine("}")
                 .method("construtor")
                 .description("Estado atual da pilha na memória.")
                 .nodes(captureCurrentNodes(null, null))

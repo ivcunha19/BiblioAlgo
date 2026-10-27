@@ -37,6 +37,21 @@ export default function StructureSelectorHome({ onSelectStructure }) {
             suas operações, acompanhar a alocação de células na memória e observar
             a execução linha a linha do código em Java.
           </p>
+          <p
+            className="text-xs leading-relaxed mt-1 px-3 py-2 rounded-lg"
+            style={{
+              backgroundColor: 'var(--bg-elevated)',
+              color: 'var(--text-secondary)',
+              border: '1px solid var(--border-primary)',
+            }}
+          >
+            <strong style={{ color: 'var(--text-primary)' }}>
+              Nota sobre terminologia:
+            </strong>{' '}
+            Em Java, variáveis que armazenam o endereço de objetos são chamadas de{' '}
+            <strong>referências</strong>, mas também utilizamos o termo{' '}
+            <strong>ponteiros</strong> por ser amplamente empregado nas aulas de AEDS.
+          </p>
         </div>
 
         <div
@@ -89,18 +104,6 @@ export default function StructureSelectorHome({ onSelectStructure }) {
                   >
                     {item.fileName}
                   </span>
-
-                  <span
-                    className="text-xs font-mono-code font-bold px-2 py-0.5 rounded"
-                    style={{
-                      backgroundColor: 'var(--bg-elevated)',
-                      color: 'var(--text-primary)',
-                      border: '1px solid var(--border-primary)',
-                    }}
-                    title="Complexidade das operações principais"
-                  >
-                    Complexidade {item.complexityTag}
-                  </span>
                 </div>
 
                 {/* Title & Policy */}
@@ -127,7 +130,7 @@ export default function StructureSelectorHome({ onSelectStructure }) {
                   {item.summary}
                 </p>
 
-                {/* Pointers & Empty Invariant Box */}
+                {/* References & Empty Invariant Box */}
                 <div
                   className="p-3 rounded-lg flex flex-col gap-2 text-xs font-mono-code"
                   style={{
@@ -136,7 +139,9 @@ export default function StructureSelectorHome({ onSelectStructure }) {
                   }}
                 >
                   <div className="flex items-center justify-between">
-                    <span style={{ color: 'var(--text-muted)' }}>Ponteiros:</span>
+                    <span style={{ color: 'var(--text-muted)' }}>
+                      Referências (Ponteiros):
+                    </span>
                     <div className="flex items-center gap-1.5">
                       <span
                         className="px-1.5 py-0.5 rounded border font-semibold"
@@ -171,27 +176,47 @@ export default function StructureSelectorHome({ onSelectStructure }) {
                   </div>
                 </div>
 
-                {/* Methods List */}
+                {/* Operations & Complexity List */}
                 <div className="flex flex-col gap-1.5">
                   <span
                     className="text-[11px] font-mono-code uppercase tracking-wider font-semibold"
                     style={{ color: 'var(--text-muted)' }}
                   >
-                    Métodos implementados:
+                    Operações e Complexidade:
                   </span>
-                  <div className="flex flex-wrap gap-1.5">
-                    {item.operationsList.map((opName) => (
-                      <code
-                        key={opName}
-                        className="text-xs font-mono-code px-2 py-0.5 rounded"
+                  <div className="flex flex-col gap-1">
+                    {item.operationsComplexity.map((op) => (
+                      <div
+                        key={op.name}
+                        className="flex items-center justify-between text-xs font-mono-code px-2.5 py-1 rounded"
                         style={{
                           backgroundColor: 'var(--bg-elevated)',
-                          color: 'var(--text-primary)',
                           border: '1px solid var(--border-primary)',
                         }}
                       >
-                        {opName}
-                      </code>
+                        <code
+                          style={{
+                            color: op.theoretical
+                              ? 'var(--text-secondary)'
+                              : 'var(--text-primary)',
+                          }}
+                        >
+                          {op.name}
+                        </code>
+                        <span
+                          className="font-bold px-1.5 py-0.5 rounded text-[11px]"
+                          style={{
+                            backgroundColor: 'var(--bg-surface)',
+                            color:
+                              op.complexity === 'O(1)'
+                                ? 'var(--accent-secondary)'
+                                : 'var(--accent-primary)',
+                            border: '1px solid var(--border-subtle)',
+                          }}
+                        >
+                          {op.complexity}
+                        </span>
+                      </div>
                     ))}
                   </div>
                 </div>

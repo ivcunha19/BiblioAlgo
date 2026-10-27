@@ -22,19 +22,47 @@ public class FilaService {
     public synchronized ExecutionTrace reset() {
         this.fila = new Fila<>();
         List<StepSnapshot> steps = new ArrayList<>();
-        
-        StepSnapshot initialStep = StepSnapshot.builder()
+        String sentinelaId = fila.getFrente().getId();
+
+        steps.add(StepSnapshot.builder()
                 .stepIndex(0)
+                .lineNumber(6)
+                .codeLine("Celula<E> sentinela = new Celula<E>();")
+                .method("construtor")
+                .description("Aloca a célula sentinela na memória (item = null, proximo = null). A referência local 'sentinela' aponta para ela.")
+                .nodes(captureCurrentNodes(null, null))
+                .pointers(List.of(
+                        PointerSnapshot.builder()
+                                .nome("sentinela")
+                                .targetNodeId(sentinelaId)
+                                .tipo("variavel_local")
+                                .cor("#f59e0b")
+                                .build()
+                ))
+                .variables(Collections.emptyMap())
+                .build());
+
+        steps.add(StepSnapshot.builder()
+                .stepIndex(1)
                 .lineNumber(7)
                 .codeLine("frente = tras = sentinela;")
                 .method("construtor")
-                .description("Fila inicializada. Apenas a célula sentinela existe na memória; 'frente' e 'tras' apontam para ela.")
+                .description("As referências 'frente' e 'tras' recebem o endereço guardado em 'sentinela', passando a apontar para a mesma célula.")
+                .nodes(captureCurrentNodes(null, null))
+                .pointers(capturePointers("sentinela", sentinelaId, null, null))
+                .variables(Collections.emptyMap())
+                .build());
+
+        steps.add(StepSnapshot.builder()
+                .stepIndex(2)
+                .lineNumber(8)
+                .codeLine("}")
+                .method("construtor")
+                .description("Fim do construtor. A variável local 'sentinela' sai de escopo; 'frente' e 'tras' permanecem apontando para a célula sentinela (fila vazia: frente == tras).")
                 .nodes(captureCurrentNodes(null, null))
                 .pointers(capturePointers(null, null, null, null))
                 .variables(Collections.emptyMap())
-                .build();
-                
-        steps.add(initialStep);
+                .build());
 
         return ExecutionTrace.builder()
                 .method("construtor")
@@ -45,11 +73,14 @@ public class FilaService {
     }
 
     public synchronized ExecutionTrace getCurrentState() {
+        if (fila.vazia()) {
+            return reset();
+        }
         List<StepSnapshot> steps = new ArrayList<>();
         StepSnapshot step = StepSnapshot.builder()
                 .stepIndex(0)
-                .lineNumber(7)
-                .codeLine("frente = tras = sentinela;")
+                .lineNumber(8)
+                .codeLine("}")
                 .method("construtor")
                 .description("Estado atual da fila na memória.")
                 .nodes(captureCurrentNodes(null, null))

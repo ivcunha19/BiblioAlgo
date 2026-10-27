@@ -62,15 +62,12 @@ export default function QueueVisualizer({ structureType = 'fila', step }) {
   const startPtr = pointers.find((p) => p.nome === primaryStartPtrName);
   const endPtr = pointers.find((p) => p.nome === primaryEndPtrName);
   const isStructureEmpty =
-    startPtr && endPtr && startPtr.targetNodeId === endPtr.targetNodeId;
+    (startPtr && endPtr && startPtr.targetNodeId === endPtr.targetNodeId) ||
+    (nodes.length === 1 && nodes[0].sentinela);
 
   const activeItemsCount = Math.max(
     0,
     nodes.filter((n) => !n.sentinela && !n.removido && !n.novo).length
-  );
-
-  const localPointers = pointers.filter(
-    (p) => p.nome !== primaryStartPtrName && p.nome !== primaryEndPtrName
   );
 
   let logicalPosCounter = 0;
@@ -112,7 +109,11 @@ export default function QueueVisualizer({ structureType = 'fila', step }) {
             )}
           </div>
           <p className="text-xs mt-1" style={{ color: 'var(--text-secondary)' }}>
-            {isStructureEmpty ? (
+            {!startPtr && !endPtr ? (
+              <span>
+                Inicializando construtor: alocação da célula sentinela na memória
+              </span>
+            ) : isStructureEmpty ? (
               <span>
                 Estado atual:{' '}
                 <code className="font-mono-code font-semibold">
@@ -132,33 +133,19 @@ export default function QueueVisualizer({ structureType = 'fila', step }) {
           </p>
         </div>
 
-        {/* Pointer Legend */}
+        {/* Active References Legend */}
         <div className="flex flex-wrap items-center gap-1.5 text-xs font-mono-code">
           <span
-            className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded border font-medium"
-            style={getPointerStyles(primaryStartPtrName)}
+            className="text-[11px] mr-1"
+            style={{ color: 'var(--text-muted)' }}
           >
-            <span>↓</span> {primaryStartPtrName}
+            Referências (Ponteiros):
           </span>
-          <span
-            className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded border font-medium"
-            style={getPointerStyles(primaryEndPtrName)}
-          >
-            <span>↓</span> {primaryEndPtrName}
-          </span>
-          {localPointers.map((ptr) => (
+          {pointers.map((ptr) => (
             <span
               key={ptr.nome}
               className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded border font-medium"
-              style={
-                ptr.nome === 'novaCelula' || ptr.nome === 'sentinela'
-                  ? getPointerStyles('novaCelula')
-                  : {
-                      backgroundColor: 'var(--ptr-primeiro-bg)',
-                      color: 'var(--ptr-primeiro-text)',
-                      borderColor: 'var(--ptr-primeiro-border)',
-                    }
-              }
+              style={getPointerStyles(ptr.nome)}
             >
               <span>↓</span> {ptr.nome}
             </span>
@@ -182,41 +169,22 @@ export default function QueueVisualizer({ structureType = 'fila', step }) {
               !isSentinela && !isRemovido ? logicalPosCounter++ : null;
 
             let cardBorderColor = 'var(--border-strong)';
-            let headerBg = 'var(--bg-elevated)';
-            let headerText = 'var(--text-primary)';
 
             if (isSentinela) {
               cardBorderColor = 'var(--accent-secondary)';
-              headerBg = 'var(--accent-secondary-soft)';
-              headerText = 'var(--accent-secondary)';
             } else if (isNovo) {
               cardBorderColor = 'var(--ptr-novo-border)';
-              headerBg = 'var(--ptr-novo-bg)';
-              headerText = 'var(--ptr-novo-text)';
             } else if (isRemovido) {
               cardBorderColor = 'var(--danger-border)';
-              headerBg = 'var(--danger-bg)';
-              headerText = 'var(--danger-text)';
             }
 
             return (
               <React.Fragment key={node.id}>
                 <div className="flex flex-col items-center relative">
-                  {/* Pointers pointing to this cell */}
+                  {/* References pointing to this cell */}
                   <div className="min-h-[54px] flex flex-col items-center justify-end gap-1 mb-2">
                     {nodePointers.map((ptr) => {
-                      const isPrimary =
-                        ptr.nome === primaryStartPtrName ||
-                        ptr.nome === primaryEndPtrName;
-                      const badgeStyle = isPrimary
-                        ? getPointerStyles(ptr.nome)
-                        : ptr.nome === 'novaCelula' || ptr.nome === 'sentinela'
-                        ? getPointerStyles('novaCelula')
-                        : {
-                            backgroundColor: 'var(--ptr-primeiro-bg)',
-                            color: 'var(--ptr-primeiro-text)',
-                            borderColor: 'var(--ptr-primeiro-border)',
-                          };
+                      const badgeStyle = getPointerStyles(ptr.nome);
 
                       return (
                         <div
@@ -231,7 +199,7 @@ export default function QueueVisualizer({ structureType = 'fila', step }) {
                     })}
                   </div>
 
-                  {/* Memory Cell Box: [ item | proximo ] */}
+                  {/* Memory Cell Box: [ item | proximo ] (without variable-like header title) */}
                   <div
                     className="w-36 sm:w-40 rounded-lg overflow-hidden flex flex-col transition-all duration-200"
                     style={{
@@ -243,29 +211,6 @@ export default function QueueVisualizer({ structureType = 'fila', step }) {
                       boxShadow: '0 2px 6px rgba(0, 0, 0, 0.06)',
                     }}
                   >
-                    {/* Cell Title Bar */}
-                    <div
-                      className="px-2.5 py-1 text-[11px] font-mono-code font-semibold flex items-center justify-between"
-                      style={{
-                        backgroundColor: headerBg,
-                        color: headerText,
-                        borderBottom: `1px solid ${cardBorderColor}`,
-                      }}
-                    >
-                      <span>
-                        {isSentinela
-                          ? '⚓ Sentinela'
-                          : isNovo
-                          ? '✨ Nova Célula'
-                          : isRemovido
-                          ? '🗑️ Removida'
-                          : structureType === 'lista' && currentLogicalPos !== null
-                          ? `Posição [${currentLogicalPos}]`
-                          : `Célula [${index}]`}
-                      </span>
-                      <span className="text-[10px] opacity-80">#{node.id}</span>
-                    </div>
-
                     {/* Two Compartments: item | proximo */}
                     <div
                       className="grid grid-cols-2 text-center"
@@ -273,7 +218,7 @@ export default function QueueVisualizer({ structureType = 'fila', step }) {
                     >
                       {/* Item Field */}
                       <div
-                        className="p-2.5 flex flex-col items-center justify-center"
+                        className="p-3 flex flex-col items-center justify-center"
                         style={{ borderRight: '1px solid var(--border-primary)' }}
                       >
                         <span
@@ -283,7 +228,7 @@ export default function QueueVisualizer({ structureType = 'fila', step }) {
                           item
                         </span>
                         <span
-                          className={`font-mono-code text-sm sm:text-base font-bold mt-0.5 ${
+                          className={`font-mono-code text-sm sm:text-base font-bold mt-1 ${
                             isSentinela ? 'italic font-normal' : ''
                           }`}
                           style={{
@@ -297,7 +242,7 @@ export default function QueueVisualizer({ structureType = 'fila', step }) {
                       </div>
 
                       {/* Proximo Field */}
-                      <div className="p-2.5 flex flex-col items-center justify-center">
+                      <div className="p-3 flex flex-col items-center justify-center">
                         <span
                           className="text-[10px] uppercase font-mono-code tracking-wider"
                           style={{ color: 'var(--text-muted)' }}
@@ -327,44 +272,22 @@ export default function QueueVisualizer({ structureType = 'fila', step }) {
                     </div>
                   </div>
 
-                  {/* Role Caption Below Cell */}
+                  {/* Subtle Logical Index Caption (Lista only) */}
                   <div
                     className="mt-2 min-h-[18px] text-[11px] font-mono-code text-center"
                     style={{ color: 'var(--text-secondary)' }}
                   >
-                    {isSentinela && (
-                      <span>
-                        {structureType === 'pilha'
-                          ? '(base / fundo)'
-                          : '(cabeça fixa)'}
-                      </span>
-                    )}
-                    {isNovo && (
-                      <span style={{ color: 'var(--ptr-novo-text)' }}>
-                        (recém-alocada)
-                      </span>
-                    )}
-                    {isRemovido && (
-                      <span style={{ color: 'var(--danger-text)' }}>
-                        (desvinculada)
-                      </span>
-                    )}
-                    {!isSentinela && !isNovo && !isRemovido && (
-                      <span>
-                        {structureType === 'pilha' && index === 0
-                          ? '(topo atual)'
-                          : structureType === 'fila' && index === 1
-                          ? '(1º da fila)'
-                          : structureType === 'lista' &&
-                            currentLogicalPos !== null
-                          ? `índice ${currentLogicalPos}`
-                          : ''}
-                      </span>
-                    )}
+                    {!isSentinela &&
+                      !isNovo &&
+                      !isRemovido &&
+                      structureType === 'lista' &&
+                      currentLogicalPos !== null && (
+                        <span>(índice {currentLogicalPos})</span>
+                      )}
                   </div>
                 </div>
 
-                {/* Pointer Arrow Between Cells */}
+                {/* Reference Arrow Between Cells */}
                 {index < nodes.length - 1 && (
                   <div className="flex items-center px-1 font-mono-code text-xs self-center mt-6">
                     {node.proximoId ? (
@@ -390,7 +313,7 @@ export default function QueueVisualizer({ structureType = 'fila', step }) {
                     ) : (
                       <div
                         className="flex flex-col items-center px-1"
-                        title="Sem vínculo de ponteiro (proximo = null)"
+                        title="Sem vínculo de referência (proximo = null)"
                       >
                         <span
                           className="text-xs font-bold"
@@ -422,7 +345,7 @@ export default function QueueVisualizer({ structureType = 'fila', step }) {
                   border: '1px solid var(--border-primary)',
                   color: 'var(--text-secondary)',
                 }}
-                title="Fim do encadeamento (ponteiro nulo)"
+                title="Fim do encadeamento (referência nula)"
               >
                 <span
                   className="font-bold"

@@ -17,6 +17,23 @@ class FilaServiceTest {
     }
 
     @Test
+    void testConstrutorResetSentinelaScope() {
+        ExecutionTrace traceReset = filaService.reset();
+        assertTrue(traceReset.isSuccess());
+        assertEquals(3, traceReset.getSteps().size());
+
+        // Passo 0: Celula<E> sentinela = new Celula<E>(); -> apenas 'sentinela'
+        assertEquals(1, traceReset.getSteps().get(0).getPointers().size());
+        assertEquals("sentinela", traceReset.getSteps().get(0).getPointers().get(0).getNome());
+
+        // Passo 1: frente = tras = sentinela; -> 'frente', 'tras' e 'sentinela'
+        assertEquals(3, traceReset.getSteps().get(1).getPointers().size());
+
+        // Passo 2: } -> 'sentinela' sai de escopo, restam 'frente' e 'tras'
+        assertEquals(2, traceReset.getSteps().get(2).getPointers().size());
+    }
+
+    @Test
     void testEnfileirarEDesenfileirar() {
         // Enfileirar 'A'
         ExecutionTrace traceEnfileirarA = filaService.enfileirar("A");

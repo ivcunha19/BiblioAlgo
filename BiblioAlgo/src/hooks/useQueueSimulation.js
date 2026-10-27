@@ -21,10 +21,10 @@ function buildFilaResetTrace() {
         codeLine: 'Celula<E> sentinela = new Celula<E>();',
         method: 'construtor',
         description:
-          'Aloca a célula sentinela (cabeça) na memória com item = null e proximo = null.',
+          'Aloca a célula sentinela na memória (item = null, proximo = null). A referência local "sentinela" aponta para ela.',
         nodes: [{ ...sentinela, novo: true }],
-        pointers: [{ nome: 'novaCelula', targetNodeId: 'sentinela', tipo: 'local' }],
-        variables: { sentinela: '#sentinela' },
+        pointers: [{ nome: 'sentinela', targetNodeId: 'sentinela', tipo: 'local' }],
+        variables: {},
       },
       {
         stepIndex: 1,
@@ -32,7 +32,22 @@ function buildFilaResetTrace() {
         codeLine: 'frente = tras = sentinela;',
         method: 'construtor',
         description:
-          'Fila inicializada. Os ponteiros "frente" e "tras" apontam ambos para a célula sentinela (invariante de fila vazia: frente == tras).',
+          'As referências "frente" e "tras" recebem o endereço guardado em "sentinela", passando a apontar para a mesma célula.',
+        nodes: [sentinela],
+        pointers: [
+          { nome: 'frente', targetNodeId: 'sentinela', tipo: 'atributo' },
+          { nome: 'tras', targetNodeId: 'sentinela', tipo: 'atributo' },
+          { nome: 'sentinela', targetNodeId: 'sentinela', tipo: 'local' },
+        ],
+        variables: {},
+      },
+      {
+        stepIndex: 2,
+        lineNumber: 8,
+        codeLine: '}',
+        method: 'construtor',
+        description:
+          'Fim do construtor. A variável local "sentinela" sai de escopo; as referências "frente" e "tras" permanecem apontando para a célula sentinela (fila vazia: frente == tras).',
         nodes: [sentinela],
         pointers: [
           { nome: 'frente', targetNodeId: 'sentinela', tipo: 'atributo' },
@@ -62,18 +77,47 @@ function buildPilhaResetTrace() {
         codeLine: 'Celula<E> sentinela = new Celula<E>();',
         method: 'construtor',
         description:
-          'Aloca a célula sentinela (fundo da pilha) na memória com item = null e proximo = null.',
+          'Aloca a célula sentinela (base da pilha) na memória com item = null e proximo = null. A referência local "sentinela" aponta para ela.',
         nodes: [{ ...sentinela, novo: true }],
         pointers: [{ nome: 'sentinela', targetNodeId: 'sentinela', tipo: 'local' }],
-        variables: { sentinela: '#sentinela' },
+        variables: {},
       },
       {
         stepIndex: 1,
+        lineNumber: 7,
+        codeLine: 'fundo = sentinela;',
+        method: 'construtor',
+        description:
+          'A referência "fundo" recebe o endereço guardado em "sentinela", apontando para a célula base.',
+        nodes: [sentinela],
+        pointers: [
+          { nome: 'fundo', targetNodeId: 'sentinela', tipo: 'atributo' },
+          { nome: 'sentinela', targetNodeId: 'sentinela', tipo: 'local' },
+        ],
+        variables: {},
+      },
+      {
+        stepIndex: 2,
         lineNumber: 8,
         codeLine: 'topo = sentinela;',
         method: 'construtor',
         description:
-          'Pilha inicializada. Os ponteiros "topo" e "fundo" apontam ambos para a célula sentinela (invariante de pilha vazia: fundo == topo).',
+          'A referência "topo" também recebe o endereço guardado em "sentinela". Agora "topo", "fundo" e "sentinela" apontam para a mesma célula.',
+        nodes: [sentinela],
+        pointers: [
+          { nome: 'topo', targetNodeId: 'sentinela', tipo: 'atributo' },
+          { nome: 'fundo', targetNodeId: 'sentinela', tipo: 'atributo' },
+          { nome: 'sentinela', targetNodeId: 'sentinela', tipo: 'local' },
+        ],
+        variables: {},
+      },
+      {
+        stepIndex: 3,
+        lineNumber: 9,
+        codeLine: '}',
+        method: 'construtor',
+        description:
+          'Fim do construtor. A variável local "sentinela" sai de escopo; "topo" e "fundo" permanecem referenciando a célula sentinela (pilha vazia: fundo == topo).',
         nodes: [sentinela],
         pointers: [
           { nome: 'topo', targetNodeId: 'sentinela', tipo: 'atributo' },
@@ -103,18 +147,48 @@ function buildListaResetTrace() {
         codeLine: 'Celula<E> sentinela = new Celula<>();',
         method: 'construtor',
         description:
-          'Aloca a célula sentinela (cabeça da lista) na memória com item = null e proximo = null.',
+          'Aloca a célula sentinela (cabeça da lista) na memória com item = null e proximo = null. A referência local "sentinela" aponta para ela.',
         nodes: [{ ...sentinela, novo: true }],
         pointers: [{ nome: 'sentinela', targetNodeId: 'sentinela', tipo: 'local' }],
-        variables: { sentinela: '#sentinela' },
+        variables: {},
       },
       {
         stepIndex: 1,
+        lineNumber: 8,
+        codeLine: 'this.primeiro = this.ultimo = sentinela;',
+        method: 'construtor',
+        description:
+          'As referências "primeiro" e "ultimo" recebem o endereço guardado em "sentinela", passando a apontar para a célula cabeça.',
+        nodes: [sentinela],
+        pointers: [
+          { nome: 'primeiro', targetNodeId: 'sentinela', tipo: 'atributo' },
+          { nome: 'ultimo', targetNodeId: 'sentinela', tipo: 'atributo' },
+          { nome: 'sentinela', targetNodeId: 'sentinela', tipo: 'local' },
+        ],
+        variables: {},
+      },
+      {
+        stepIndex: 2,
         lineNumber: 9,
         codeLine: 'this.tamanho = 0;',
         method: 'construtor',
         description:
-          'Lista inicializada. "primeiro" e "ultimo" apontam para a sentinela e o atributo "tamanho" é definido como 0.',
+          'Inicializa o atributo "tamanho" com 0.',
+        nodes: [sentinela],
+        pointers: [
+          { nome: 'primeiro', targetNodeId: 'sentinela', tipo: 'atributo' },
+          { nome: 'ultimo', targetNodeId: 'sentinela', tipo: 'atributo' },
+          { nome: 'sentinela', targetNodeId: 'sentinela', tipo: 'local' },
+        ],
+        variables: { tamanho: 0 },
+      },
+      {
+        stepIndex: 3,
+        lineNumber: 10,
+        codeLine: '}',
+        method: 'construtor',
+        description:
+          'Fim do construtor. A variável local "sentinela" sai de escopo; "primeiro" e "ultimo" permanecem apontando para a célula sentinela (lista vazia: primeiro == ultimo).',
         nodes: [sentinela],
         pointers: [
           { nome: 'primeiro', targetNodeId: 'sentinela', tipo: 'atributo' },
@@ -280,8 +354,8 @@ export function useQueueSimulation(structureType = 'fila') {
             codeLine: 'return (frente == tras);',
             method: 'vazia',
             description: isEmpty
-              ? 'Como "frente" e "tras" apontam ambos para a sentinela, retorna true (fila vazia).'
-              : `Como "frente" (#sentinela) é diferente de "tras" (#${lastNode.id}), retorna false (a fila possui elementos).`,
+              ? 'Como as referências "frente" e "tras" apontam ambas para a célula sentinela, retorna true (fila vazia).'
+              : 'Como "frente" e "tras" referenciam células diferentes, retorna false (a fila possui elementos).',
             nodes: cloneNodes(baseNodes),
             pointers: [
               { nome: 'frente', targetNodeId: 'sentinela', tipo: 'atributo' },
@@ -357,14 +431,13 @@ export function useQueueSimulation(structureType = 'fila') {
             lineNumber: 37,
             codeLine: 'return frente.getProximo().getItem();',
             method: 'consultarPrimeiro',
-            description: `Acessa a célula após a sentinela (#${firstDataNode.id}) e retorna seu item "${firstDataNode.valor}" sem removê-la.`,
+            description: `Acessa a célula seguinte à referenciada por "frente" (frente.getProximo()) e retorna seu item "${firstDataNode.valor}" sem removê-la.`,
             nodes: cloneNodes(baseNodes),
             pointers: [
               { nome: 'frente', targetNodeId: 'sentinela', tipo: 'atributo' },
-              { nome: 'primeiro', targetNodeId: firstDataNode.id, tipo: 'local' },
               { nome: 'tras', targetNodeId: lastNode.id, tipo: 'atributo' },
             ],
-            variables: { 'frente.proximo': `#${firstDataNode.id}` },
+            variables: {},
             returnValue: firstDataNode.valor,
           },
         ],
@@ -399,41 +472,58 @@ export function useQueueSimulation(structureType = 'fila') {
             lineNumber: 15,
             codeLine: 'Celula<E> novaCelula = new Celula<E>(item);',
             method: 'enfileirar',
-            description: `Aloca uma nova célula (#${newId}) no heap contendo o valor "${payload.item}" e proximo = null.`,
+            description: `Aloca uma nova célula na memória contendo item = "${payload.item}" e proximo = null, referenciada por "novaCelula".`,
             nodes: step1Nodes,
             pointers: [
               { nome: 'frente', targetNodeId: 'sentinela', tipo: 'atributo' },
               { nome: 'tras', targetNodeId: lastNode.id, tipo: 'atributo' },
               { nome: 'novaCelula', targetNodeId: newId, tipo: 'local' },
             ],
-            variables: { item: payload.item, novaCelula: `#${newId}` },
+            variables: { item: payload.item },
           },
           {
             stepIndex: 1,
             lineNumber: 16,
             codeLine: 'tras.setProximo(novaCelula);',
             method: 'enfileirar',
-            description: `Encadeia a nova célula ao final da fila: o campo "proximo" de #${lastNode.id} passa a apontar para #${newId}.`,
+            description:
+              'Encadeia a nova célula ao final da fila: o atributo "proximo" da célula referenciada por "tras" passa a apontar para "novaCelula".',
             nodes: step2Nodes,
             pointers: [
               { nome: 'frente', targetNodeId: 'sentinela', tipo: 'atributo' },
               { nome: 'tras', targetNodeId: lastNode.id, tipo: 'atributo' },
               { nome: 'novaCelula', targetNodeId: newId, tipo: 'local' },
             ],
-            variables: { item: payload.item, 'tras.proximo': `#${newId}` },
+            variables: { item: payload.item },
           },
           {
             stepIndex: 2,
             lineNumber: 17,
             codeLine: 'tras = tras.getProximo();',
             method: 'enfileirar',
-            description: `Avança o ponteiro "tras" para a nova última célula (#${newId}). Inserção concluída em O(1).`,
+            description:
+              'Avança a referência "tras" para a nova última célula (tras.getProximo()).',
+            nodes: step3Nodes,
+            pointers: [
+              { nome: 'frente', targetNodeId: 'sentinela', tipo: 'atributo' },
+              { nome: 'tras', targetNodeId: newId, tipo: 'atributo' },
+              { nome: 'novaCelula', targetNodeId: newId, tipo: 'local' },
+            ],
+            variables: { item: payload.item },
+          },
+          {
+            stepIndex: 3,
+            lineNumber: 18,
+            codeLine: '}',
+            method: 'enfileirar',
+            description:
+              'Fim do método enfileirar. A variável local "novaCelula" sai de escopo; "tras" permanece referenciando o último elemento.',
             nodes: step3Nodes,
             pointers: [
               { nome: 'frente', targetNodeId: 'sentinela', tipo: 'atributo' },
               { nome: 'tras', targetNodeId: newId, tipo: 'atributo' },
             ],
-            variables: { item: payload.item, tras: `#${newId}` },
+            variables: {},
           },
         ],
       };
@@ -513,7 +603,7 @@ export function useQueueSimulation(structureType = 'fila') {
           lineNumber: 23,
           codeLine: 'item = consultarPrimeiro();',
           method: 'desenfileirar',
-          description: `Obtém o valor da primeira célula útil (#${firstNode.id}): item = "${firstNode.valor}".`,
+          description: `Obtém o valor da primeira célula útil após a sentinela: item = "${firstNode.valor}".`,
           nodes: step1Nodes,
           pointers: [
             { nome: 'frente', targetNodeId: 'sentinela', tipo: 'atributo' },
@@ -526,14 +616,15 @@ export function useQueueSimulation(structureType = 'fila') {
           lineNumber: 24,
           codeLine: 'primeiro = frente.getProximo();',
           method: 'desenfileirar',
-          description: `O ponteiro local "primeiro" guarda a referência para a célula #${firstNode.id} que será removida.`,
+          description:
+            'A referência local "primeiro" passa a apontar para a primeira célula útil (frente.getProximo()), que será removida.',
           nodes: step2Nodes,
           pointers: [
             { nome: 'frente', targetNodeId: 'sentinela', tipo: 'atributo' },
             { nome: 'primeiro', targetNodeId: firstNode.id, tipo: 'local' },
             { nome: 'tras', targetNodeId: lastNode.id, tipo: 'atributo' },
           ],
-          variables: { item: firstNode.valor, primeiro: `#${firstNode.id}` },
+          variables: { item: firstNode.valor },
         },
         {
           stepIndex: 2,
@@ -541,26 +632,23 @@ export function useQueueSimulation(structureType = 'fila') {
           codeLine: 'frente.setProximo(primeiro.getProximo());',
           method: 'desenfileirar',
           description: nextAfterFirst
-            ? `A sentinela passa a apontar diretamente para #${nextAfterFirst.id}, contornando #${firstNode.id}.`
-            : `A sentinela passa a apontar para null, pois #${firstNode.id} era o único item da fila.`,
+            ? 'A célula referenciada por "frente" passa a apontar seu "proximo" para a célula seguinte a "primeiro", contornando-a.'
+            : 'A célula referenciada por "frente" passa a ter proximo = null, pois "primeiro" era o único item útil da fila.',
           nodes: step3Nodes,
           pointers: [
             { nome: 'frente', targetNodeId: 'sentinela', tipo: 'atributo' },
             { nome: 'primeiro', targetNodeId: firstNode.id, tipo: 'local' },
             { nome: 'tras', targetNodeId: lastNode.id, tipo: 'atributo' },
           ],
-          variables: {
-            item: firstNode.valor,
-            primeiro: `#${firstNode.id}`,
-            'frente.proximo': nextAfterFirst ? `#${nextAfterFirst.id}` : 'null',
-          },
+          variables: { item: firstNode.valor },
         },
         {
           stepIndex: 3,
           lineNumber: 26,
           codeLine: 'primeiro.setProximo(null);',
           method: 'desenfileirar',
-          description: `Isola completamente a célula removida (#${firstNode.id}) definindo seu ponteiro proximo como null.`,
+          description:
+            'Isola completamente a célula referenciada por "primeiro" definindo seu atributo "proximo" como null.',
           nodes: step4Nodes,
           pointers: [
             { nome: 'frente', targetNodeId: 'sentinela', tipo: 'atributo' },
@@ -575,8 +663,8 @@ export function useQueueSimulation(structureType = 'fila') {
           codeLine: 'if (primeiro == tras)',
           method: 'desenfileirar',
           description: wasOnlyElement
-            ? `Verifica se a célula removida era a última da fila: verdadeiro (#${firstNode.id} == tras).`
-            : `Verifica se a célula removida era a última da fila: falso (#${firstNode.id} != #${lastNode.id}).`,
+            ? 'Verifica se a célula removida era a última da fila: verdadeiro (primeiro == tras).'
+            : 'Verifica se a célula removida era a última da fila: falso (primeiro != tras).',
           nodes: step4Nodes,
           pointers: [
             { nome: 'frente', targetNodeId: 'sentinela', tipo: 'atributo' },
@@ -594,14 +682,14 @@ export function useQueueSimulation(structureType = 'fila') {
           codeLine: 'tras = frente;',
           method: 'desenfileirar',
           description:
-            'Como o último item foi removido, "tras" retorna para a célula sentinela (frente), restaurando o estado de fila vazia.',
+            'Como o último item foi removido, a referência "tras" volta a apontar para a mesma célula de "frente" (fila vazia).',
           nodes: step4Nodes,
           pointers: [
             { nome: 'frente', targetNodeId: 'sentinela', tipo: 'atributo' },
             { nome: 'tras', targetNodeId: 'sentinela', tipo: 'atributo' },
             { nome: 'primeiro', targetNodeId: firstNode.id, tipo: 'local' },
           ],
-          variables: { item: firstNode.valor, tras: '#sentinela' },
+          variables: { item: firstNode.valor },
         });
       }
 
@@ -610,7 +698,7 @@ export function useQueueSimulation(structureType = 'fila') {
         lineNumber: 30,
         codeLine: 'return item;',
         method: 'desenfileirar',
-        description: `Retorna o item removido "${firstNode.valor}". A célula #${firstNode.id} é coletada pelo Garbage Collector.`,
+        description: `Retorna o item removido "${firstNode.valor}". A variável local "primeiro" sai de escopo e a célula desvinculada é coletada pelo Garbage Collector.`,
         nodes: finalNodes,
         pointers: [
           { nome: 'frente', targetNodeId: 'sentinela', tipo: 'atributo' },
@@ -673,8 +761,8 @@ export function useQueueSimulation(structureType = 'fila') {
             codeLine: 'return fundo == topo;',
             method: 'vazia',
             description: isEmpty
-              ? 'Como "fundo" e "topo" apontam ambos para a sentinela, retorna true (pilha vazia).'
-              : `Como "topo" (#${currentTop.id}) é diferente de "fundo" (#sentinela), retorna false (a pilha possui elementos).`,
+              ? 'Como "fundo" e "topo" apontam ambos para a célula sentinela, retorna true (pilha vazia).'
+              : 'Como "topo" e "fundo" referenciam células diferentes, retorna false (a pilha possui elementos).',
             nodes: cloneNodes(baseNodes),
             pointers: [
               { nome: 'topo', targetNodeId: currentTop.id, tipo: 'atributo' },
@@ -749,7 +837,7 @@ export function useQueueSimulation(structureType = 'fila') {
             lineNumber: 29,
             codeLine: 'return topo.getItem();',
             method: 'consultarTopo',
-            description: `Retorna diretamente o item armazenado na célula apontada por "topo" (#${currentTop.id}): "${currentTop.valor}".`,
+            description: `Retorna diretamente o item armazenado na célula referenciada por "topo": "${currentTop.valor}".`,
             nodes: cloneNodes(baseNodes),
             pointers: [
               { nome: 'topo', targetNodeId: currentTop.id, tipo: 'atributo' },
@@ -786,7 +874,7 @@ export function useQueueSimulation(structureType = 'fila') {
             lineNumber: 15,
             codeLine: 'public void empilhar(E item) {',
             method: 'empilhar',
-            description: `Inicia empilhar("${payload.item}"). O topo atual é #${currentTop.id}.`,
+            description: `Inicia empilhar("${payload.item}").`,
             nodes: step1Nodes,
             pointers: [
               { nome: 'topo', targetNodeId: currentTop.id, tipo: 'atributo' },
@@ -799,7 +887,7 @@ export function useQueueSimulation(structureType = 'fila') {
             lineNumber: 16,
             codeLine: 'topo = new Celula<E>(item, topo);',
             method: 'empilhar',
-            description: `Aloca a nova célula #${newId} com item = "${payload.item}" apontando seu "proximo" para o antigo topo (#${currentTop.id}) e atualiza "topo" para #${newId}.`,
+            description: `Aloca uma nova célula com item = "${payload.item}" apontando seu "proximo" para o antigo "topo" e atualiza a referência "topo" para a nova célula.`,
             nodes: step2Nodes,
             pointers: [
               { nome: 'topo', targetNodeId: newId, tipo: 'atributo' },
@@ -807,8 +895,6 @@ export function useQueueSimulation(structureType = 'fila') {
             ],
             variables: {
               item: payload.item,
-              'novo.proximo': `#${currentTop.id}`,
-              topo: `#${newId}`,
             },
           },
         ],
@@ -871,7 +957,7 @@ export function useQueueSimulation(structureType = 'fila') {
             lineNumber: 20,
             codeLine: 'E desempilhado = consultarTopo();',
             method: 'desempilhar',
-            description: `Obtém o valor no topo (#${currentTop.id}) através de consultarTopo(): desempilhado = "${currentTop.valor}".`,
+            description: `Obtém o valor na célula do topo através de consultarTopo(): desempilhado = "${currentTop.valor}".`,
             nodes: step1Nodes,
             pointers: [
               { nome: 'topo', targetNodeId: currentTop.id, tipo: 'atributo' },
@@ -884,7 +970,8 @@ export function useQueueSimulation(structureType = 'fila') {
             lineNumber: 21,
             codeLine: 'topo = topo.getProximo();',
             method: 'desempilhar',
-            description: `Avança o ponteiro "topo" para a célula seguinte (#${nextTop.id}), desvinculando o antigo topo (#${currentTop.id}).`,
+            description:
+              'Avança a referência "topo" para a célula seguinte (topo.getProximo()), desvinculando o antigo topo.',
             nodes: step2Nodes,
             pointers: [
               { nome: 'topo', targetNodeId: nextTop.id, tipo: 'atributo' },
@@ -892,7 +979,6 @@ export function useQueueSimulation(structureType = 'fila') {
             ],
             variables: {
               desempilhado: currentTop.valor,
-              topo: `#${nextTop.id}`,
             },
           },
           {
@@ -900,7 +986,7 @@ export function useQueueSimulation(structureType = 'fila') {
             lineNumber: 22,
             codeLine: 'return desempilhado;',
             method: 'desempilhar',
-            description: `Retorna o item desempilhado "${currentTop.valor}". A célula #${currentTop.id} é liberada da memória.`,
+            description: `Retorna o item desempilhado "${currentTop.valor}". A célula anterior é liberada da memória.`,
             nodes: finalNodes,
             pointers: [
               { nome: 'topo', targetNodeId: nextTop.id, tipo: 'atributo' },
@@ -957,8 +1043,8 @@ export function useQueueSimulation(structureType = 'fila') {
             codeLine: 'return (this.primeiro == this.ultimo);',
             method: 'vazia',
             description: isEmpty
-              ? 'Como "primeiro" e "ultimo" apontam ambos para a sentinela (tamanho = 0), retorna true.'
-              : `Como "primeiro" (#sentinela) != "ultimo" (#${lastNode.id}), retorna false (tamanho = ${tamanho}).`,
+              ? 'Como "primeiro" e "ultimo" apontam ambos para a célula sentinela (tamanho = 0), retorna true.'
+              : `Como "primeiro" e "ultimo" referenciam células diferentes, retorna false (tamanho = ${tamanho}).`,
             nodes: cloneNodes(baseNodes),
             pointers: [
               { nome: 'primeiro', targetNodeId: 'sentinela', tipo: 'atributo' },
@@ -1016,7 +1102,7 @@ export function useQueueSimulation(structureType = 'fila') {
         codeLine: 'anterior = this.primeiro;',
         method: 'inserir',
         description:
-          'Posiciona o ponteiro auxiliar "anterior" na célula sentinela ("primeiro") para iniciar o caminhamento.',
+          'Posiciona a referência auxiliar "anterior" na célula sentinela ("primeiro") para iniciar o caminhamento.',
         nodes: cloneNodes(baseNodes),
         pointers: [
           { nome: 'primeiro', targetNodeId: 'sentinela', tipo: 'atributo' },
@@ -1026,7 +1112,6 @@ export function useQueueSimulation(structureType = 'fila') {
         variables: {
           novo: novoItem,
           posicao,
-          anterior: '#sentinela',
           tamanho,
         },
       });
@@ -1038,7 +1123,7 @@ export function useQueueSimulation(structureType = 'fila') {
           lineNumber: 23,
           codeLine: 'anterior = anterior.getProximo();',
           method: 'inserir',
-          description: `Laço for (i = ${i}): avança "anterior" para a célula #${targetAnterior.id} (índice ${i}).`,
+          description: `Laço for (i = ${i}): avança a referência "anterior" para a célula seguinte (índice ${i}).`,
           nodes: cloneNodes(baseNodes),
           pointers: [
             { nome: 'primeiro', targetNodeId: 'sentinela', tipo: 'atributo' },
@@ -1049,7 +1134,6 @@ export function useQueueSimulation(structureType = 'fila') {
             novo: novoItem,
             posicao,
             i,
-            anterior: `#${targetAnterior.id}`,
             tamanho,
           },
         });
@@ -1077,7 +1161,7 @@ export function useQueueSimulation(structureType = 'fila') {
         lineNumber: 24,
         codeLine: 'novaCelula = new Celula<>(novo);',
         method: 'inserir',
-        description: `Aloca "novaCelula" (#${newId}) na memória com item = "${novoItem}".`,
+        description: `Aloca uma nova célula na memória com item = "${novoItem}", referenciada por "novaCelula".`,
         nodes: nodesWithAlloc,
         pointers: [
           { nome: 'primeiro', targetNodeId: 'sentinela', tipo: 'atributo' },
@@ -1088,8 +1172,7 @@ export function useQueueSimulation(structureType = 'fila') {
         variables: {
           novo: novoItem,
           posicao,
-          anterior: `#${anteriorNode.id}`,
-          novaCelula: `#${newId}`,
+          tamanho,
         },
       });
 
@@ -1112,14 +1195,14 @@ export function useQueueSimulation(structureType = 'fila') {
         codeLine: 'proximaCelula = anterior.getProximo();',
         method: 'inserir',
         description: proximaNode
-          ? `"proximaCelula" guarda a referência para #${proximaNode.id} (antigo sucessor de "anterior").`
+          ? 'A referência "proximaCelula" guarda o endereço da célula que atualmente sucede "anterior".'
           : 'Como "anterior" era o último nó, "proximaCelula" recebe null.',
         nodes: nodesWithAlloc.map((n) => ({ ...n })),
         pointers: pointersWithProxima,
         variables: {
           novo: novoItem,
           posicao,
-          proximaCelula: proximaNode ? `#${proximaNode.id}` : 'null',
+          proximaCelula: proximaNode ? 'anterior.proximo' : 'null',
         },
       });
 
@@ -1134,14 +1217,13 @@ export function useQueueSimulation(structureType = 'fila') {
         lineNumber: 27,
         codeLine: 'novaCelula.setProximo(proximaCelula);',
         method: 'inserir',
-        description: `Costura os ponteiros: #${anteriorNode.id}.proximo aponta para #${newId}, e #${newId}.proximo aponta para ${
-          proximaNode ? `#${proximaNode.id}` : 'null'
-        }.`,
+        description:
+          'Encadeia as referências: o campo "proximo" de "anterior" aponta para "novaCelula", e o campo "proximo" de "novaCelula" aponta para "proximaCelula".',
         nodes: nodesLinked,
         pointers: pointersWithProxima,
         variables: {
-          'anterior.proximo': `#${newId}`,
-          'novaCelula.proximo': proximaNode ? `#${proximaNode.id}` : 'null',
+          novo: novoItem,
+          posicao,
         },
       });
 
@@ -1154,14 +1236,15 @@ export function useQueueSimulation(structureType = 'fila') {
           lineNumber: 29,
           codeLine: 'this.ultimo = novaCelula;',
           method: 'inserir',
-          description: `Como posicao == tamanho (${posicao} == ${tamanho}), atualiza o ponteiro "ultimo" para a nova célula (#${newId}).`,
+          description: `Como posicao == tamanho (${posicao} == ${tamanho}), atualiza a referência "ultimo" para apontar para "novaCelula".`,
           nodes: nodesLinked.map((n) => ({ ...n })),
           pointers: [
             { nome: 'primeiro', targetNodeId: 'sentinela', tipo: 'atributo' },
             { nome: 'ultimo', targetNodeId: newId, tipo: 'atributo' },
+            { nome: 'anterior', targetNodeId: anteriorNode.id, tipo: 'local' },
             { nome: 'novaCelula', targetNodeId: newId, tipo: 'local' },
           ],
-          variables: { ultimo: `#${newId}`, tamanho },
+          variables: { tamanho },
         });
       }
 
@@ -1173,7 +1256,7 @@ export function useQueueSimulation(structureType = 'fila') {
         lineNumber: 30,
         codeLine: 'this.tamanho++;',
         method: 'inserir',
-        description: `Incrementa "this.tamanho" para ${tamanho + 1}. Inserção na posição ${posicao} concluída.`,
+        description: `Incrementa "this.tamanho" para ${tamanho + 1}. As variáveis locais saem de escopo ao final do método.`,
         nodes: finalNodes,
         pointers: [
           { nome: 'primeiro', targetNodeId: 'sentinela', tipo: 'atributo' },
@@ -1252,14 +1335,14 @@ export function useQueueSimulation(structureType = 'fila') {
         codeLine: 'anterior = this.primeiro;',
         method: 'remover',
         description:
-          'Posiciona o ponteiro "anterior" na sentinela ("primeiro") para caminhar até a posição anterior ao item removido.',
+          'Posiciona a referência "anterior" na célula sentinela ("primeiro") para caminhar até a posição anterior ao item removido.',
         nodes: cloneNodes(baseNodes),
         pointers: [
           { nome: 'primeiro', targetNodeId: 'sentinela', tipo: 'atributo' },
           { nome: 'ultimo', targetNodeId: lastNode.id, tipo: 'atributo' },
           { nome: 'anterior', targetNodeId: 'sentinela', tipo: 'local' },
         ],
-        variables: { posicao, anterior: '#sentinela', tamanho },
+        variables: { posicao, tamanho },
       });
 
       for (let i = 0; i < posicao; i++) {
@@ -1269,14 +1352,14 @@ export function useQueueSimulation(structureType = 'fila') {
           lineNumber: 43,
           codeLine: 'anterior = anterior.getProximo();',
           method: 'remover',
-          description: `Laço for (i = ${i}): avança "anterior" para #${targetAnterior.id}.`,
+          description: `Laço for (i = ${i}): avança a referência "anterior" para a célula seguinte.`,
           nodes: cloneNodes(baseNodes),
           pointers: [
             { nome: 'primeiro', targetNodeId: 'sentinela', tipo: 'atributo' },
             { nome: 'ultimo', targetNodeId: lastNode.id, tipo: 'atributo' },
             { nome: 'anterior', targetNodeId: targetAnterior.id, tipo: 'local' },
           ],
-          variables: { posicao, i, anterior: `#${targetAnterior.id}`, tamanho },
+          variables: { posicao, i, tamanho },
         });
       }
 
@@ -1289,7 +1372,7 @@ export function useQueueSimulation(structureType = 'fila') {
         lineNumber: 44,
         codeLine: 'celulaRemovida = anterior.getProximo();',
         method: 'remover',
-        description: `"celulaRemovida" aponta para a célula #${celulaRemovida.id} (item = "${celulaRemovida.valor}") na posição ${posicao}.`,
+        description: `A referência "celulaRemovida" aponta para a célula na posição ${posicao} (item = "${celulaRemovida.valor}").`,
         nodes: cloneNodes(baseNodes),
         pointers: [
           { nome: 'primeiro', targetNodeId: 'sentinela', tipo: 'atributo' },
@@ -1303,8 +1386,7 @@ export function useQueueSimulation(structureType = 'fila') {
         ],
         variables: {
           posicao,
-          anterior: `#${anteriorNode.id}`,
-          celulaRemovida: `#${celulaRemovida.id}`,
+          tamanho,
         },
       });
 
@@ -1323,9 +1405,8 @@ export function useQueueSimulation(structureType = 'fila') {
         lineNumber: 47,
         codeLine: 'celulaRemovida.setProximo(null);',
         method: 'remover',
-        description: `Desvincula #${celulaRemovida.id}: "anterior.proximo" passa a apontar para ${
-          proximaCelula ? `#${proximaCelula.id}` : 'null'
-        } e "celulaRemovida.proximo" recebe null.`,
+        description:
+          'Desvincula "celulaRemovida": o campo "proximo" de "anterior" passa a apontar para "proximaCelula" e o campo "proximo" de "celulaRemovida" recebe null.',
         nodes: unlinkedNodes,
         pointers: [
           { nome: 'primeiro', targetNodeId: 'sentinela', tipo: 'atributo' },
@@ -1338,7 +1419,6 @@ export function useQueueSimulation(structureType = 'fila') {
           },
         ],
         variables: {
-          'anterior.proximo': proximaCelula ? `#${proximaCelula.id}` : 'null',
           'celulaRemovida.proximo': 'null',
         },
       });
@@ -1352,14 +1432,20 @@ export function useQueueSimulation(structureType = 'fila') {
           lineNumber: 49,
           codeLine: 'this.ultimo = anterior;',
           method: 'remover',
-          description: `Como a célula removida era a última da lista, "this.ultimo" recua para "anterior" (#${anteriorNode.id}).`,
+          description:
+            'Como a célula removida era a última da lista, a referência "ultimo" recua para a célula apontada por "anterior".',
           nodes: unlinkedNodes.map((n) => ({ ...n })),
           pointers: [
             { nome: 'primeiro', targetNodeId: 'sentinela', tipo: 'atributo' },
             { nome: 'ultimo', targetNodeId: anteriorNode.id, tipo: 'atributo' },
             { nome: 'anterior', targetNodeId: anteriorNode.id, tipo: 'local' },
+            {
+              nome: 'celulaRemovida',
+              targetNodeId: celulaRemovida.id,
+              tipo: 'local',
+            },
           ],
-          variables: { ultimo: `#${anteriorNode.id}` },
+          variables: { posicao, tamanho },
         });
       }
 
