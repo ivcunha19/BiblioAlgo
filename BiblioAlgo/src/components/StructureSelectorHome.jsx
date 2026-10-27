@@ -1,5 +1,6 @@
 import React from 'react';
 import { STRUCTURES_CATALOG } from '../data/queueCode';
+import { SORTING_KEYS } from '../data/sortingCode';
 import logoImg from '../assets/logo.png';
 
 const STRUCTURE_KEYS = ['fila', 'pilha', 'lista'];
@@ -27,15 +28,15 @@ export default function StructureSelectorHome({ onSelectStructure }) {
             className="text-2xl sm:text-3xl font-bold font-serif-library tracking-tight"
             style={{ color: 'var(--text-primary)' }}
           >
-            Escolha uma estrutura para estudar
+            Escolha uma estrutura ou método de ordenação
           </h2>
           <p
             className="text-sm sm:text-base leading-relaxed"
             style={{ color: 'var(--text-secondary)' }}
           >
-            Selecione uma das estruturas dinâmicas encadeadas abaixo para executar
-            suas operações, acompanhar a alocação de células na memória e observar
-            a execução linha a linha do código em Java.
+            Selecione uma das estruturas dinâmicas encadeadas ou um dos métodos de
+            ordenação abaixo para acompanhar o estado da memória, o controle por
+            iteração e a execução linha a linha do código em Java.
           </p>
           <p
             className="text-xs leading-relaxed mt-1 px-3 py-2 rounded-lg"
@@ -72,11 +73,27 @@ export default function StructureSelectorHome({ onSelectStructure }) {
         </div>
       </section>
 
-      {/* Structure Cards Grid */}
-      <section
-        aria-label="Estruturas de Dados Disponíveis"
-        className="grid grid-cols-1 md:grid-cols-3 gap-5 items-stretch"
-      >
+      {/* Section 1: Linear Data Structures */}
+      <div className="flex flex-col gap-4">
+        <div className="flex items-center justify-between">
+          <h3
+            className="text-lg sm:text-xl font-bold font-serif-library"
+            style={{ color: 'var(--text-primary)' }}
+          >
+            1. Estruturas de Dados Flexíveis (Encadeadas)
+          </h3>
+          <span
+            className="text-xs font-mono-code"
+            style={{ color: 'var(--text-muted)' }}
+          >
+            Alocação dinâmica com Célula Sentinela
+          </span>
+        </div>
+
+        <section
+          aria-label="Estruturas de Dados Disponíveis"
+          className="grid grid-cols-1 md:grid-cols-3 gap-5 items-stretch"
+        >
         {STRUCTURE_KEYS.map((key) => {
           const item = STRUCTURES_CATALOG[key];
           const [ptrA, ptrB] = item.primaryPointers;
@@ -238,7 +255,203 @@ export default function StructureSelectorHome({ onSelectStructure }) {
             </article>
           );
         })}
-      </section>
+        </section>
+      </div>
+
+      {/* Section 2: Sorting Algorithms (IOrdenator) */}
+      <div
+        className="flex flex-col gap-4 pt-4"
+        style={{ borderTop: '1px solid var(--border-primary)' }}
+      >
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <div>
+            <h3
+              className="text-lg sm:text-xl font-bold font-serif-library"
+              style={{ color: 'var(--text-primary)' }}
+            >
+              2. Métodos de Ordenação em Memória Principal
+            </h3>
+            <p className="text-xs mt-0.5" style={{ color: 'var(--text-secondary)' }}>
+              Implementações da interface <code className="font-mono-code">IOrdenator&lt;T&gt;</code> com controle passo a passo e por iteração
+            </p>
+          </div>
+          <span
+            className="text-xs font-mono-code px-2.5 py-1 rounded"
+            style={{
+              backgroundColor: 'var(--bg-elevated)',
+              color: 'var(--text-secondary)',
+              border: '1px solid var(--border-primary)',
+            }}
+          >
+            6 algoritmos disponíveis
+          </span>
+        </div>
+
+        <section
+          aria-label="Métodos de Ordenação Disponíveis"
+          className="grid grid-cols-1 md:grid-cols-3 gap-5 items-stretch"
+        >
+          {SORTING_KEYS.map((key) => {
+            const item = STRUCTURES_CATALOG[key];
+
+            return (
+              <article
+                key={item.id}
+                className="rounded-xl p-5 sm:p-6 flex flex-col justify-between gap-5 transition-all"
+                style={{
+                  backgroundColor: 'var(--bg-surface)',
+                  border: '1px solid var(--border-primary)',
+                  boxShadow: '0 2px 6px rgba(0, 0, 0, 0.04)',
+                }}
+              >
+                <div className="flex flex-col gap-4">
+                  {/* Top Metadata Row */}
+                  <div className="flex items-center justify-between gap-2">
+                    <span
+                      className="text-xs font-mono-code font-semibold px-2.5 py-0.5 rounded"
+                      style={{
+                        backgroundColor: 'var(--accent-secondary-soft)',
+                        color: 'var(--accent-secondary)',
+                        border: '1px solid var(--border-primary)',
+                      }}
+                    >
+                      {item.fileName}
+                    </span>
+                    <span
+                      className="text-[11px] font-mono-code px-2 py-0.5 rounded"
+                      style={{
+                        backgroundColor: 'var(--bg-elevated)',
+                        color: 'var(--text-secondary)',
+                        border: '1px solid var(--border-subtle)',
+                      }}
+                    >
+                      IOrdenator&lt;T&gt;
+                    </span>
+                  </div>
+
+                  {/* Title & Policy */}
+                  <div>
+                    <h4
+                      className="text-xl font-bold font-serif-library"
+                      style={{ color: 'var(--text-primary)' }}
+                    >
+                      {item.title}
+                    </h4>
+                    <p
+                      className="text-xs font-mono-code mt-1"
+                      style={{ color: 'var(--accent-primary)' }}
+                    >
+                      {item.policyTag}
+                    </p>
+                  </div>
+
+                  {/* Summary */}
+                  <p
+                    className="text-xs sm:text-sm leading-relaxed"
+                    style={{ color: 'var(--text-secondary)' }}
+                  >
+                    {item.summary}
+                  </p>
+
+                  {/* Indices & Invariant Box */}
+                  <div
+                    className="p-3 rounded-lg flex flex-col gap-2 text-xs font-mono-code"
+                    style={{
+                      backgroundColor: 'var(--bg-page)',
+                      border: '1px solid var(--border-subtle)',
+                    }}
+                  >
+                    <div className="flex items-center justify-between gap-2">
+                      <span style={{ color: 'var(--text-muted)' }}>
+                        Índices / Variáveis:
+                      </span>
+                      <div className="flex flex-wrap items-center gap-1">
+                        {item.primaryPointers.map((ptr) => (
+                          <span
+                            key={ptr}
+                            className="px-1.5 py-0.5 rounded border font-semibold"
+                            style={{
+                              backgroundColor: 'var(--ptr-frente-bg)',
+                              color: 'var(--ptr-frente-text)',
+                              borderColor: 'var(--ptr-frente-border)',
+                            }}
+                          >
+                            {ptr}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="flex items-center justify-between gap-2">
+                      <span style={{ color: 'var(--text-muted)' }}>
+                        Propriedade:
+                      </span>
+                      <strong
+                        className="text-right"
+                        style={{ color: 'var(--text-primary)' }}
+                      >
+                        {item.invariantText}
+                      </strong>
+                    </div>
+                  </div>
+
+                  {/* Complexity Breakdown */}
+                  <div className="flex flex-col gap-1.5">
+                    <span
+                      className="text-[11px] font-mono-code uppercase tracking-wider font-semibold"
+                      style={{ color: 'var(--text-muted)' }}
+                    >
+                      Análise de Complexidade:
+                    </span>
+                    <div className="flex flex-col gap-1">
+                      {item.operationsComplexity.map((op) => (
+                        <div
+                          key={op.name}
+                          className="flex items-center justify-between text-xs font-mono-code px-2.5 py-1 rounded"
+                          style={{
+                            backgroundColor: 'var(--bg-elevated)',
+                            border: '1px solid var(--border-primary)',
+                          }}
+                        >
+                          <span style={{ color: 'var(--text-primary)' }}>
+                            {op.name}
+                          </span>
+                          <span
+                            className="font-bold px-1.5 py-0.5 rounded text-[11px]"
+                            style={{
+                              backgroundColor: 'var(--bg-surface)',
+                              color: op.complexity.includes('O(n log n)') || op.complexity.includes('O(1)') || op.complexity === 'O(n)'
+                                ? 'var(--accent-secondary)'
+                                : 'var(--accent-primary)',
+                              border: '1px solid var(--border-subtle)',
+                            }}
+                          >
+                            {op.complexity}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Action Button */}
+                <button
+                  type="button"
+                  onClick={() => onSelectStructure(item.id)}
+                  className="w-full py-2.5 px-4 rounded-lg text-sm font-semibold transition cursor-pointer flex items-center justify-center gap-2"
+                  style={{
+                    backgroundColor: 'var(--accent-secondary)',
+                    color: '#ffffff',
+                  }}
+                >
+                  <span>Abrir {item.shortName}</span>
+                  <span aria-hidden="true">→</span>
+                </button>
+              </article>
+            );
+          })}
+        </section>
+      </div>
     </main>
   );
 }

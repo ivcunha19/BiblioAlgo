@@ -1,3 +1,5 @@
+import { SORTING_CATALOG } from './sortingCode';
+
 export const QUEUE_JAVA_CODE = `public class Fila<E> {
 	private Celula<E> frente;
 	private Celula<E> tras;
@@ -255,4 +257,5 @@ export const STRUCTURES_CATALOG = {
       },
     ],
   },
+  ...SORTING_CATALOG,
 };

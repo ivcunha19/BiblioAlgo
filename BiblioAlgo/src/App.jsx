@@ -1,13 +1,191 @@
 import React, { useState } from 'react';
 import CodeViewer from './components/CodeViewer';
 import QueueVisualizer from './components/QueueVisualizer';
+import SortingVisualizer from './components/SortingVisualizer';
 import ControlsBar from './components/ControlsBar';
+import SortingControlsBar from './components/SortingControlsBar';
 import StepExplanation from './components/StepExplanation';
 import ThemeToggle from './components/ThemeToggle';
 import StructureSelectorHome from './components/StructureSelectorHome';
 import { useQueueSimulation } from './hooks/useQueueSimulation';
+import { useSortingSimulation } from './hooks/useSortingSimulation';
 import { STRUCTURES_CATALOG } from './data/queueCode';
+import { SORTING_KEYS } from './data/sortingCode';
 import logoImg from './assets/logo.png';
+
+function SortingWorkspace({ selectedAlgorithm, onBackToHome }) {
+  const {
+    inputArray,
+    steps,
+    currentStepIndex,
+    currentStep,
+    activeMethod,
+    iterations,
+    currentIterationIndex,
+    isPlaying,
+    playbackSpeed,
+    applyCustomArray,
+    generateRandomArray,
+    resetSort,
+    nextStep,
+    prevStep,
+    firstStep,
+    lastStep,
+    goToStep,
+    goToIteration,
+    nextIteration,
+    prevIteration,
+    togglePlay,
+    setPlaybackSpeed,
+  } = useSortingSimulation(selectedAlgorithm);
+
+  const currentCatalog =
+    STRUCTURES_CATALOG[selectedAlgorithm] || STRUCTURES_CATALOG.bubblesort;
+
+  return (
+    <main className="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 flex flex-col gap-5">
+      {/* Algorithm Title Bar & Back Button */}
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="flex flex-wrap items-center gap-3">
+          <button
+            type="button"
+            onClick={onBackToHome}
+            className="px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium transition cursor-pointer flex items-center gap-1.5"
+            style={{
+              backgroundColor: 'var(--bg-surface)',
+              color: 'var(--text-primary)',
+              border: '1px solid var(--border-strong)',
+            }}
+          >
+            <span aria-hidden="true">←</span>
+            <span>Trocar Método / Estrutura</span>
+          </button>
+
+          <div className="flex flex-wrap items-center gap-2">
+            <h2 className="text-lg sm:text-xl font-bold font-serif-library">
+              {currentCatalog.title}
+            </h2>
+            <span
+              className="text-xs font-mono-code px-2 py-0.5 rounded"
+              style={{
+                backgroundColor: 'var(--accent-secondary-soft)',
+                color: 'var(--accent-secondary)',
+                border: '1px solid var(--border-primary)',
+              }}
+            >
+              {currentCatalog.policyTag}
+            </span>
+          </div>
+        </div>
+
+        <span
+          className="text-xs font-mono-code"
+          style={{ color: 'var(--text-muted)' }}
+        >
+          Classe: <strong>{currentCatalog.fileName}</strong>
+        </span>
+      </div>
+
+      {/* Sorting Workbench Controls (Array Input + Iteration Controls + Stepper) */}
+      <SortingControlsBar
+        inputArray={inputArray}
+        onApplyCustomArray={applyCustomArray}
+        onGenerateRandomArray={generateRandomArray}
+        onReset={resetSort}
+        iterations={iterations}
+        currentIterationIndex={currentIterationIndex}
+        onGoToIteration={goToIteration}
+        onNextIteration={nextIteration}
+        onPrevIteration={prevIteration}
+        currentStepIndex={currentStepIndex}
+        totalSteps={steps.length}
+        onPrevStep={prevStep}
+        onNextStep={nextStep}
+        onFirstStep={firstStep}
+        onLastStep={lastStep}
+        onGoToStep={goToStep}
+        isPlaying={isPlaying}
+        onTogglePlay={togglePlay}
+        playbackSpeed={playbackSpeed}
+        onChangeSpeed={setPlaybackSpeed}
+        activeMethod={activeMethod}
+      />
+
+      {/* Two-Column Study Layout */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-stretch">
+        {/* Left Column: Step Explanation + Array Visualizer (7 cols) */}
+        <div className="lg:col-span-7 flex flex-col gap-5 min-h-[480px]">
+          <StepExplanation
+            step={currentStep}
+            stepIndex={currentStepIndex}
+            totalSteps={steps.length}
+          />
+
+          <div className="flex-1 min-h-[340px]">
+            <SortingVisualizer
+              algorithmId={selectedAlgorithm}
+              step={currentStep}
+            />
+          </div>
+        </div>
+
+        {/* Right Column: Source Code (5 cols) */}
+        <div className="lg:col-span-5 h-[500px] lg:h-auto min-h-[480px]">
+          <CodeViewer
+            structureType={selectedAlgorithm}
+            currentLineNumber={currentStep?.lineNumber || 0}
+            activeMethod={activeMethod}
+          />
+        </div>
+      </div>
+
+      {/* Conceptual Summary Cards */}
+      <section
+        aria-label="Resumo Conceitual"
+        className="pt-4"
+        style={{ borderTop: '1px solid var(--border-primary)' }}
+      >
+        <div className="flex items-center justify-between gap-2 mb-3">
+          <span
+            className="text-xs font-mono-code uppercase tracking-wider font-semibold"
+            style={{ color: 'var(--text-muted)' }}
+          >
+            Conceitos Principais — {currentCatalog.title}
+          </span>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+          {currentCatalog.cards.map((card) => (
+            <article
+              key={card.title}
+              className="p-4 rounded-xl"
+              style={{
+                backgroundColor: 'var(--bg-surface)',
+                border: '1px solid var(--border-primary)',
+              }}
+            >
+              <div
+                className="font-mono-code text-[11px] uppercase tracking-wider mb-1"
+                style={{ color: 'var(--accent-primary)' }}
+              >
+                {card.tag}
+              </div>
+              <h3 className="font-serif-library font-bold text-sm mb-1.5">
+                {card.title}
+              </h3>
+              <p
+                className="leading-relaxed"
+                style={{ color: 'var(--text-secondary)' }}
+              >
+                {card.body}
+              </p>
+            </article>
+          ))}
+        </div>
+      </section>
+    </main>
+  );
+}
 
 function StructureWorkspace({ selectedStructure, onBackToHome }) {
   const {
@@ -236,7 +414,7 @@ export default function App() {
                 BiblioAlgo
               </h1>
               <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>
-                Visualizador Didático de Estruturas de Dados
+                Visualizador Didático de Estruturas de Dados e Ordenação
               </p>
             </div>
           </button>
@@ -247,11 +425,18 @@ export default function App() {
         </div>
       </header>
 
-      {/* Main Content: Home Selection Page OR Selected Structure Workspace */}
+      {/* Main Content: Home Selection Page OR Selected Structure/Sorting Workspace */}
       {selectedStructure === null ? (
         <StructureSelectorHome onSelectStructure={setSelectedStructure} />
+      ) : SORTING_KEYS.includes(selectedStructure) ? (
+        <SortingWorkspace
+          key={selectedStructure}
+          selectedAlgorithm={selectedStructure}
+          onBackToHome={() => setSelectedStructure(null)}
+        />
       ) : (
         <StructureWorkspace
+          key={selectedStructure}
           selectedStructure={selectedStructure}
           onBackToHome={() => setSelectedStructure(null)}
         />
